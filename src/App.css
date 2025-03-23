@@ -8,12 +8,13 @@ html, body {
 
 /* General App Styles */
 .app {
-  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height */
   display: flex;
   flex-direction: column;
   transition: background 0.5s ease;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow: hidden;
+  position: relative; /* Ensure relative positioning for child elements */
 }
 
 .app.light {
@@ -26,21 +27,31 @@ html, body {
 
 /* Splash Screen */
 .splash-screen {
+  position: fixed; /* Ensure it covers the entire viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);
   background-size: 200% 200%;
-  animation: gradientShift 5s ease infinite, fadeOut 2s forwards 3s;
+  animation: gradientShift 3s ease infinite, fadeOut 2s forwards 1s; /* Updated timing */
+  z-index: 1000; /* Ensure it’s above other elements */
+}
+
+.splash-screen.hidden {
+  display: none; /* Hide the splash screen after animation */
 }
 
 .splash-title {
-  font-size: 2.5rem; /* Reduced for smaller screens */
+  font-size: 2.5rem;
   font-weight: 800;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 2px;
+  text-align: center; /* Ensure text is centered on all devices */
 }
 
 .splash-text {
@@ -85,6 +96,7 @@ html, body {
 
 @keyframes fadeOut {
   0% { opacity: 1; }
+  99% { opacity: 0; }
   100% { opacity: 0; }
 }
 
@@ -249,16 +261,17 @@ html, body {
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Align to top to prevent centering issues */
   padding: 0;
-  height: 100vh;
+  height: 100%; /* Use 100% height to fit within parent */
   box-sizing: border-box;
+  position: relative; /* Ensure relative positioning for child elements */
 }
 
 .chat-container {
   width: 100%;
   max-width: 900px;
-  height: 100%; /* Use full height instead of fixed 95vh */
+  height: 100dvh; /* Use dynamic viewport height to account for mobile address bar */
   background: #ffffff;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
@@ -282,6 +295,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   animation: fadeIn 1s ease-in;
+  flex-shrink: 0; /* Prevent header from shrinking */
 }
 
 .app.dark .chat-header {
@@ -320,6 +334,7 @@ html, body {
   padding: 1rem;
   scrollbar-width: thin;
   scrollbar-color: #d1d5db transparent;
+  min-height: 0; /* Allow flex child to shrink properly */
 }
 
 .app.dark .chat-content {
@@ -465,6 +480,7 @@ html, body {
     border-radius: 0; /* Remove border radius on smaller screens */
     border: none;
     box-shadow: none;
+    height: 100dvh; /* Ensure full height on mobile */
   }
   .chat-header {
     padding: 0.75rem;
@@ -494,6 +510,9 @@ html, body {
 }
 
 @media (max-width: 480px) {
+  .chat-container {
+    height: 100dvh;
+  }
   .chat-header {
     padding: 0.5rem;
   }
@@ -541,6 +560,10 @@ html, body {
   border-top: 1px solid #e5e7eb;
   border-radius: 0 0 12px 12px;
   box-sizing: border-box;
+  flex-shrink: 0; /* Prevent input bar from shrinking */
+  position: sticky; /* Ensure it stays at the bottom */
+  bottom: 0;
+  z-index: 10; /* Ensure it’s above other elements */
 }
 
 .app.dark .chat-input-bar {
@@ -716,4 +739,28 @@ html, body {
   .logout-button {
     font-size: 1.1rem;
   }
+}
+
+/* Retry Button */
+.retry-button {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #6b7280;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  transition: color 0.3s ease;
+}
+
+.app.dark .retry-button {
+  color: #9ca3af;
+}
+
+.retry-button:hover {
+  color: #3b82f6;
+}
+
+.app.dark .retry-button:hover {
+  color: #60a5fa;
 }
