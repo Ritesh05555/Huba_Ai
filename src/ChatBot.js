@@ -1123,7 +1123,6 @@
 
 // export default ChatBot;
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
@@ -1448,27 +1447,14 @@ function ChatBot() {
 
   // Check for existing token on app load
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          // Validate the token by making a request to a protected endpoint
-          await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/validate', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          setIsAuthenticated(true); // Token is valid, set as authenticated
-        } catch (error) {
-          console.error('Token validation failed:', error.response ? error.response.data : error.message);
-          localStorage.removeItem('token'); // Remove invalid token
-          setIsAuthenticated(false);
-        }
-      }
-      setIsSplash(false); // Hide splash screen after auth check
-    };
-
-    checkAuth();
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true); // Assume token is valid
+    }
+    // Show splash screen for 2 seconds, then proceed
+    setTimeout(() => {
+      setIsSplash(false);
+    }, 2000);
   }, []);
 
   const toggleTheme = () => {
@@ -1505,6 +1491,8 @@ function ChatBot() {
                 )
               }
             />
+            {/* Catch-all route to redirect unknown paths */}
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
           </Routes>
         </Router>
       )}
