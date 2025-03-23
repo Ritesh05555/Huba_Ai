@@ -557,3 +557,38 @@ html, body {
   .app.dark .theme-toggle:hover {
     color: #fde047;
   }
+
+  /* Chat Header */
+.chat-header {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app.dark .chat-header {
+  border-bottom: 1px solid #404040;
+}
+
+/* Logout Button */
+.logout-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.app.dark .logout-button {
+  color: #9ca3af;
+}
+
+.logout-button:hover {
+  color: #ef4444;
+}
+
+.app.dark .logout-button:hover {
+  color: #f87171;
+}
