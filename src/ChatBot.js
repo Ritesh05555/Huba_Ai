@@ -7020,26 +7020,1728 @@
 // }
 
 // export default ChatBot;
+//
+//////////////////////////////////////////////////////////////////////////////////////////
+// deployed one v2
 
-import React, { useState, useEffect, useRef } from 'react'; // Ensure useRef is included here
+// import React, { useState, useEffect, useRef } from 'react'; // Ensure useRef is included here
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon } from 'react-icons/fa';
+// import DOMPurify from 'dompurify';
+// import './App.css?v=9';
+
+// const SplashScreen = ({ onAnimationEnd }) => {
+//   const [showSlogan, setShowSlogan] = useState(false);
+
+//   useEffect(() => {
+//     // Show slogan after 1.2 seconds
+//     const sloganTimer = setTimeout(() => {
+//       setShowSlogan(true);
+//     }, 200);
+
+//     return () => clearTimeout(sloganTimer);
+//   }, []);
+
+//   return (
+//     <div className={`splash-screen ${onAnimationEnd ? 'hidden' : ''}`}>
+//       <div className="splash-content">
+//         <h1 className="splash-title">HUBA AI</h1>
+//         {showSlogan && <p className="splash-slogan">THINK . TALK . SOLVE</p>}
+//       </div>
+//     </div>
+//   );
+// };
+// // Rest of the code remains unchanged...
+
+// const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
+//   const [isSignup, setIsSignup] = useState(false);
+//   const [formData, setFormData] = useState({
+//     fullName: '',
+//     email: '',
+//     password: '',
+//   });
+//   const [error, setError] = useState('');
+//   const [signupSuccess, setSignupSuccess] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     setError('');
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+
+//     const dataToSend = {
+//       fullName: formData.fullName,
+//       email: formData.email,
+//       password: formData.password,
+//     };
+
+//     const url = isSignup
+//       ? 'https://aichatbot-backend-hxs8.onrender.com/api/auth/signup'
+//       : 'https://aichatbot-backend-hxs8.onrender.com/api/auth/login';
+
+//     try {
+//       console.log('Sending data to', url, ':', dataToSend);
+//       const response = await axios.post(url, isSignup ? dataToSend : { email: formData.email, password: formData.password });
+
+//       if (isSignup && response.status === 200) {
+//         setSignupSuccess(true);
+//         setError('Signup successful! Please log in.');
+//         return;
+//       }
+
+//       if (!isSignup && (response.status === 200 || response.status === 201)) {
+//         const token = response.data.token;
+//         console.log('Login response:', response.data);
+
+//         const loginFirstName = response.data.user.fullName.split(' ')[0] || 'User';
+//         localStorage.setItem('token', token);
+//         localStorage.setItem('firstName', loginFirstName);
+
+//         try {
+//           const userResponse = await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/user', {
+//             headers: { 'Authorization': `Bearer ${token}` },
+//           });
+
+//           console.log('User details fetched:', userResponse.data);
+//           const firstName = userResponse.data.firstName || loginFirstName;
+//           setFirstName(firstName);
+//           localStorage.setItem('firstName', firstName);
+//         } catch (userError) {
+//           console.error('Error fetching user details:', userError.response?.data || userError.message);
+//           setFirstName(loginFirstName);
+//         }
+
+//         setIsAuthenticated(true);
+//       }
+//     } catch (error) {
+//       const errorMessage = error.response?.data?.error || error.message || 'An unknown error occurred';
+//       console.error('Auth error:', error.response ? error.response.data : error.message);
+//       setError(errorMessage);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="auth-screen">
+//       <div className="auth-card">
+//         <h2 className="auth-title">{isSignup ? 'Sign Up' : 'Login'}</h2>
+//         {error && <p style={{ color: signupSuccess ? 'green' : 'red', textAlign: 'center' }}>{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           {isSignup && (
+//             <input
+//               type="text"
+//               name="fullName"
+//               placeholder="Full Name"
+//               value={formData.fullName}
+//               onChange={handleChange}
+//               required
+//               className="auth-input"
+//             />
+//           )}
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email"
+//             value={formData.email}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <input
+//             type="password"
+//             name="password"
+//             placeholder="Password"
+//             value={formData.password}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <button type="submit" className="auth-button" disabled={isLoading}>
+//             {isLoading ? (
+//               <span className="loading-text">
+//                 {isSignup ? 'Creating Account' : 'Logging In'} <span className="dots">...</span>
+//               </span>
+//             ) : (
+//               isSignup ? 'Sign Up' : 'Login'
+//             )}
+//           </button>
+//         </form>
+//         <p onClick={() => { setIsSignup(!isSignup); setSignupSuccess(false); setError(''); }} className="auth-toggle">
+//           {isSignup ? 'Already have an account? Login' : 'Need an account? Sign Up'}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
+//   const [query, setQuery] = useState('');
+//   const [displayedMessages, setDisplayedMessages] = useState([]);
+//   const [isThinking, setIsThinking] = useState(false);
+//   const [isRecording, setIsRecording] = useState(false);
+//   const [showWelcome, setShowWelcome] = useState(true);
+//   const [showTitle, setShowTitle] = useState(false);
+//   const chatContentRef = useRef(null);
+//   const [copiedStates, setCopiedStates] = useState({});
+
+//   useEffect(() => {
+//     const welcomeTimer = setTimeout(() => {
+//       setShowWelcome(false);
+//       setShowTitle(true);
+//       setDisplayedMessages([]);
+//     }, 3000);
+
+//     return () => clearTimeout(welcomeTimer);
+//   }, [firstName]);
+
+//   useEffect(() => {
+//     if (chatContentRef.current) {
+//       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+//     }
+//   }, [displayedMessages, isThinking]);
+
+//   const handleSubmit = async (e, retryMessage = null) => {
+//     e.preventDefault();
+//     const messageToSend = retryMessage || query;
+
+//     if (!messageToSend.trim()) return;
+
+//     const timestamp = new Date().toISOString();
+//     const newMessage = { question: messageToSend, answer: null, error: false, canRetry: false, timestamp };
+
+//     if (!retryMessage) {
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//     }
+
+//     setIsThinking(true);
+
+//     try {
+//       const token = localStorage.getItem('token');
+//       console.log('Sending message with token:', token);
+
+//       const response = await axios.post(
+//         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
+//         { question: messageToSend },
+//         {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       console.log('API Response:', response.data);
+
+//       setDisplayedMessages((prev) => {
+//         const updatedMessages = [...prev];
+//         const messageIndex = retryMessage
+//           ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//           : updatedMessages.length - 1;
+
+//         updatedMessages[messageIndex] = {
+//           ...updatedMessages[messageIndex],
+//           answer: response.data.response || 'No response data',
+//           error: false,
+//           canRetry: false,
+//         };
+
+//         return updatedMessages;
+//       });
+//     } catch (error) {
+//       console.error('Chat Error:', error.response ? error.response.data : error.message);
+
+//       if (error.response && error.response.status === 401) {
+//         console.log('401 Unauthorized: Token is invalid or expired. Error details:', error.response.data);
+//         localStorage.removeItem('token');
+//         setIsAuthenticated(false);
+
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Your session has expired. Please log in again.',
+//             error: true,
+//             canRetry: false,
+//           };
+
+//           return updatedMessages;
+//         });
+//       } else {
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Sorry, something went wrong. Please try again.',
+//             error: true,
+//             canRetry: true,
+//           };
+
+//           return updatedMessages;
+//         });
+//       }
+//     }
+
+//     setIsThinking(false);
+//     if (!retryMessage) {
+//       setQuery('');
+//     }
+//   };
+
+//   const handleKeyPress = (e) => {
+//     if (e.key === 'Enter' && !e.shiftKey) {
+//       e.preventDefault();
+//       handleSubmit(e);
+//     }
+//   };
+
+//   const handleVoiceInput = () => {
+//     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+//     if (!SpeechRecognition) {
+//       alert('Speech Recognition API is not supported in this browser. Please use a modern browser like Chrome.');
+//       return;
+//     }
+
+//     const recognition = new SpeechRecognition();
+//     recognition.lang = 'en-US';
+//     recognition.interimResults = false;
+//     recognition.maxAlternatives = 1;
+
+//     recognition.onstart = () => {
+//       console.log('Voice recognition started. Speak now.');
+//       setIsRecording(true);
+//     };
+
+//     recognition.onresult = (event) => {
+//       const transcript = event.results[0][0].transcript;
+//       console.log('Voice Input:', transcript);
+//       setQuery(transcript);
+//     };
+
+//     recognition.onerror = (event) => {
+//       console.error('Voice Recognition Error:', event.error);
+
+//       if (event.error === 'no-speech') {
+//         alert('No speech detected. Please try again.');
+//       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+//         alert('Microphone access denied. Please allow microphone permissions in your browser settings.');
+//       } else {
+//         alert('An error occurred during voice recognition: ' + event.error);
+//       }
+//     };
+
+//     recognition.onend = () => {
+//       console.log('Voice recognition ended.');
+//       setIsRecording(false);
+//     };
+
+//     recognition.start();
+//   };
+
+//   const handleLogout = () => {
+//     const token = localStorage.getItem('token');
+
+//     axios.post(
+//       'https://aichatbot-backend-hxs8.onrender.com/api/chat/logout',
+//       {},
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//         },
+//       }
+//     ).then(() => {
+//       console.log('Logged out successfully');
+//     }).catch((err) => {
+//       console.error('Logout error:', err);
+//     });
+
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('firstName');
+//     setIsAuthenticated(false);
+//   };
+
+//   const handleRetry = (message) => (e) => {
+//     handleSubmit(e, message);
+//   };
+
+//   const handleCopy = (code, index) => {
+//     navigator.clipboard.writeText(code).then(() => {
+//       setCopiedStates((prev) => ({ ...prev, [index]: true }));
+//       setTimeout(() => {
+//         setCopiedStates((prev) => ({ ...prev, [index]: false }));
+//       }, 2000);
+//     }).catch((err) => {
+//       console.error('Failed to copy code:', err);
+//       alert('Failed to copy code. Please copy it manually.');
+//     });
+//   };
+
+//   const renderResponse = (response) => {
+//     if (!response) return null;
+
+//     const sanitizedResponse = DOMPurify.sanitize(response, { USE_PROFILES: { html: true } });
+
+//     if (sanitizedResponse.includes('```')) {
+//       const parts = sanitizedResponse.split('```');
+//       return parts.map((part, index) => {
+//         if (index % 2 === 1) {
+//           return (
+//             <div key={index} className="code-block">
+//               <button
+//                 className="copy-button"
+//                 onClick={() => handleCopy(part, index)}
+//                 title={copiedStates[index] ? 'Copied!' : 'Copy code'}
+//               >
+//                 {copiedStates[index] ? 'Copied!' : <FaCopy />}
+//               </button>
+//               <pre>{part}</pre>
+//             </div>
+//           );
+//         }
+//         return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+//       });
+//     }
+
+//     const tempRegex = /°[CF]|\btemperature\b/i;
+//     if (tempRegex.test(sanitizedResponse)) {
+//       const parts = sanitizedResponse.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
+//       const city = parts[1] || 'Unknown City';
+//       const tempMatch = sanitizedResponse.match(/[-?\d]+(\.\d+)?/);
+//       const tempUnit = sanitizedResponse.match(/[CF]/i)?.[0] || 'C';
+//       const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
+//       const skyDetails = parts[parts.length - 1] || 'N/A';
+
+//       return (
+//         <div className="temperature-container">
+//           <div className="temperature-header">Temperature of</div>
+//           <div className="temperature-city">{city}</div>
+//           <div className="temperature-value">{temperature}</div>
+//           <div className="sky-details">{skyDetails}</div>
+//         </div>
+//       );
+//     }
+
+//     const listRegex = /(\d+\.\s|[*-]\s)/;
+//     if (listRegex.test(sanitizedResponse)) {
+//       const lines = sanitizedResponse.split('\n');
+//       return (
+//         <div className="options-block">
+//           {lines.map((line, index) => {
+//             const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
+//             if (match) {
+//               const [, prefix, content] = match;
+//               const contentParts = content.split(/<\/?strong>/);
+//               let key = '';
+//               let rest = content;
+
+//               if (contentParts.length > 1) {
+//                 key = contentParts[1];
+//                 rest = content.replace(`<strong>${key}</strong>`, '');
+//               }
+
+//               return (
+//                 <div key={index} className="option-item">
+//                   <span className="option-key">{prefix}</span>
+//                   <span className="option-content">
+//                     <strong>{key}</strong>
+//                     <span dangerouslySetInnerHTML={{ __html: rest }} />
+//                   </span>
+//                 </div>
+//               );
+//             }
+//             return <div key={index} dangerouslySetInnerHTML={{ __html: line }} />;
+//           })}
+//         </div>
+//           );
+//               }
+          
+//               return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
+//             };
+          
+//             return (
+//               <div className="chat-screen">
+//                 <div className="chat-container">
+//                   <div className="chat-main">
+//                     {showTitle && (
+//                       <div className="chat-header">
+//                         <div className="theme-toggle" onClick={toggleTheme}>
+//                           {theme === 'light' ? <FaMoon /> : <FaSun />}
+//                         </div>
+//                         <h2 className="chat-title">HUBA AI</h2>
+//                         <div className="header-actions">
+//                           <button onClick={handleLogout} className="logout-button" title="Logout">
+//                             <FaSignOutAlt />
+//                           </button>
+//                         </div>
+//                       </div>
+//                     )}
+          
+//                     {showWelcome && (
+//                       <div className="welcome-message">
+//                         Welcome {firstName || 'User'} to HUBA AI
+//                       </div>
+//                     )}
+          
+//                     <div className="chat-content" ref={chatContentRef}>
+//                       {!showWelcome && displayedMessages.map((message, index) => (
+//                         <div key={index} className="chat-item">
+//                           <div className="message user-message">
+//                             <p>{message.question}</p>
+//                           </div>
+//                           {message.answer && (
+//                             <div className="message ai-message">
+//                               <p>{renderResponse(message.answer)}</p>
+//                               {message.error && message.canRetry && (
+//                                 <button
+//                                   onClick={handleRetry(message.question)}
+//                                   className="retry-button"
+//                                   title="Retry"
+//                                 >
+//                                   <FaRedo />
+//                                 </button>
+//                               )}
+//                             </div>
+//                           )}
+//                         </div>
+//                       ))}
+//                       {isThinking && <div className="thinking">Thinking...</div>}
+//                     </div>
+          
+//                     <div className="chat-input-bar">
+//                       <textarea
+//                         placeholder="Ask anything..."
+//                         value={query}
+//                         onChange={(e) => setQuery(e.target.value)}
+//                         onKeyPress={handleKeyPress}
+//                         className="chat-input"
+//                         rows="1"
+//                       />
+//                       <FaMicrophone
+//                         className={`chat-icon ${isRecording ? 'recording' : ''}`}
+//                         onClick={handleVoiceInput}
+//                       />
+//                       <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
+//                         <FaPaperPlane />
+//                       </button>
+//                     </div>
+//                   </div>
+//                 </div>
+//               </div>
+//             );
+//           };
+          
+//           function ChatBot() {
+//             const [isSplash, setIsSplash] = useState(true);
+//             const [isAuthenticated, setIsAuthenticated] = useState(false);
+//             const [theme, setTheme] = useState(() => {
+//               const savedTheme = localStorage.getItem('theme');
+//               return savedTheme || 'light';
+//             });
+//             const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
+          
+//             useEffect(() => {
+//               setTimeout(() => {
+//                 setIsSplash(false);
+//               }, 3000);
+//             }, []);
+          
+//             const toggleTheme = () => {
+//               const newTheme = theme === 'light' ? 'dark' : 'light';
+//               setTheme(newTheme);
+//               localStorage.setItem('theme', newTheme);
+//             };
+          
+//             return (
+//               <div className={`app ${theme}`}>
+//                 {isSplash ? (
+//                   <SplashScreen onAnimationEnd={!isSplash} />
+//                 ) : (
+//                   <Router>
+//                     <Routes>
+//                       <Route
+//                         path="/"
+//                         element={
+//                           !isAuthenticated ? (
+//                             <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
+//                           ) : (
+//                             <Navigate to="/chat" />
+//                           )
+//                         }
+//                       />
+//                       <Route
+//                         path="/chat"
+//                         element={
+//                           isAuthenticated ? (
+//                             <ChatScreen
+//                               setIsAuthenticated={setIsAuthenticated}
+//                               firstName={firstName}
+//                               theme={theme}
+//                               toggleTheme={toggleTheme}
+//                             />
+//                           ) : (
+//                             <Navigate to="/" />
+//                           )
+//                         }
+//                       />
+//                       <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
+//                     </Routes>
+//                   </Router>
+//                 )}
+//               </div>
+//             );
+//           }
+        
+//   export default ChatBot;
+
+///////////////////////////////////////////////////////////////////////////////
+// full done with phone screen 
+
+// import React, { useState, useEffect, useRef } from 'react';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon } from 'react-icons/fa';
+// import DOMPurify from 'dompurify';
+// import './App.css?v=9';
+
+// const SplashScreen = ({ onAnimationEnd }) => {
+//   const [showSlogan, setShowSlogan] = useState(false);
+
+//   useEffect(() => {
+//     const sloganTimer = setTimeout(() => {
+//       setShowSlogan(true);
+//     }, 200);
+
+//     return () => clearTimeout(sloganTimer);
+//   }, []);
+
+//   return (
+//     <div className={`splash-screen ${onAnimationEnd ? 'hidden' : ''}`}>
+//       <div className="splash-content">
+//         <h1 className="splash-title">HUBA AI</h1>
+//         {showSlogan && <p className="splash-slogan">THINK . TALK . SOLVE</p>}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
+//   const [isSignup, setIsSignup] = useState(false);
+//   const [formData, setFormData] = useState({
+//     fullName: '',
+//     email: '',
+//     password: '',
+//   });
+//   const [error, setError] = useState('');
+//   const [signupSuccess, setSignupSuccess] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     setError('');
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+
+//     const dataToSend = {
+//       fullName: formData.fullName,
+//       email: formData.email,
+//       password: formData.password,
+//     };
+
+//     const url = isSignup
+//       ? 'https://aichatbot-backend-hxs8.onrender.com/api/auth/signup'
+//       : 'https://aichatbot-backend-hxs8.onrender.com/api/auth/login';
+
+//     try {
+//       console.log('Sending data to', url, ':', dataToSend);
+//       const response = await axios.post(url, isSignup ? dataToSend : { email: formData.email, password: formData.password });
+
+//       if (isSignup && response.status === 200) {
+//         setSignupSuccess(true);
+//         setError('Signup successful! Please log in.');
+//         return;
+//       }
+
+//       if (!isSignup && (response.status === 200 || response.status === 201)) {
+//         const token = response.data.token;
+//         console.log('Login response:', response.data);
+
+//         const loginFirstName = response.data.user.fullName.split(' ')[0] || 'User';
+//         localStorage.setItem('token', token);
+//         localStorage.setItem('firstName', loginFirstName);
+
+//         try {
+//           const userResponse = await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/user', {
+//             headers: { 'Authorization': `Bearer ${token}` },
+//           });
+
+//           console.log('User details fetched:', userResponse.data);
+//           const firstName = userResponse.data.firstName || loginFirstName;
+//           setFirstName(firstName);
+//           localStorage.setItem('firstName', firstName);
+//         } catch (userError) {
+//           console.error('Error fetching user details:', userError.response?.data || userError.message);
+//           setFirstName(loginFirstName);
+//         }
+
+//         setIsAuthenticated(true);
+//       }
+//     } catch (error) {
+//       const errorMessage = error.response?.data?.error || error.message || 'An unknown error occurred';
+//       console.error('Auth error:', error.response ? error.response.data : error.message);
+//       setError(errorMessage);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="auth-screen">
+//       <div className="auth-card">
+//         <h2 className="auth-title">{isSignup ? 'Sign Up' : 'Login'}</h2>
+//         {error && <p style={{ color: signupSuccess ? 'green' : 'red', textAlign: 'center' }}>{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           {isSignup && (
+//             <input
+//               type="text"
+//               name="fullName"
+//               placeholder="Full Name"
+//               value={formData.fullName}
+//               onChange={handleChange}
+//               required
+//               className="auth-input"
+//             />
+//           )}
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email"
+//             value={formData.email}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <input
+//             type="password"
+//             name="password"
+//             placeholder="Password"
+//             value={formData.password}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <button type="submit" className="auth-button" disabled={isLoading}>
+//             {isLoading ? (
+//               <span className="loading-text">
+//                 {isSignup ? 'Creating Account' : 'Logging In'} <span className="dots">...</span>
+//               </span>
+//             ) : (
+//               isSignup ? 'Sign Up' : 'Login'
+//             )}
+//           </button>
+//         </form>
+//         <p onClick={() => { setIsSignup(!isSignup); setSignupSuccess(false); setError(''); }} className="auth-toggle">
+//           {isSignup ? 'Already have an account? Login' : 'Need an account? Sign Up'}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
+//   const [query, setQuery] = useState('');
+//   const [displayedMessages, setDisplayedMessages] = useState([]);
+//   const [isThinking, setIsThinking] = useState(false);
+//   const [isRecording, setIsRecording] = useState(false);
+//   const [showWelcome, setShowWelcome] = useState(true);
+//   const [showTitle, setShowTitle] = useState(false);
+//   const chatContentRef = useRef(null);
+//   const [copiedStates, setCopiedStates] = useState({});
+
+//   useEffect(() => {
+//     const welcomeTimer = setTimeout(() => {
+//       setShowWelcome(false);
+//       setShowTitle(true);
+//       setDisplayedMessages([]);
+//     }, 3000);
+
+//     return () => clearTimeout(welcomeTimer);
+//   }, [firstName]);
+
+//   useEffect(() => {
+//     if (chatContentRef.current) {
+//       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+//     }
+//   }, [displayedMessages, isThinking]);
+
+//   const handleSubmit = async (e, retryMessage = null) => {
+//     e.preventDefault();
+//     const messageToSend = retryMessage || query;
+
+//     if (!messageToSend.trim()) return;
+
+//     const timestamp = new Date().toISOString();
+//     const newMessage = { question: messageToSend, answer: null, error: false, canRetry: false, timestamp };
+
+//     if (!retryMessage) {
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//     }
+
+//     setIsThinking(true);
+
+//     try {
+//       const token = localStorage.getItem('token');
+//       console.log('Sending message with token:', token);
+
+//       const response = await axios.post(
+//         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
+//         { question: messageToSend },
+//         {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       console.log('API Response:', response.data);
+
+//       setDisplayedMessages((prev) => {
+//         const updatedMessages = [...prev];
+//         const messageIndex = retryMessage
+//           ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//           : updatedMessages.length - 1;
+
+//         updatedMessages[messageIndex] = {
+//           ...updatedMessages[messageIndex],
+//           answer: response.data.response || 'No response data',
+//           error: false,
+//           canRetry: false,
+//         };
+
+//         return updatedMessages;
+//       });
+//     } catch (error) {
+//       console.error('Chat Error:', error.response ? error.response.data : error.message);
+
+//       if (error.response && error.response.status === 401) {
+//         console.log('401 Unauthorized: Token is invalid or expired. Error details:', error.response.data);
+//         localStorage.removeItem('token');
+//         setIsAuthenticated(false);
+
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Your session has expired. Please log in again.',
+//             error: true,
+//             canRetry: false,
+//           };
+
+//           return updatedMessages;
+//         });
+//       } else {
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Sorry, something went wrong. Please try again.',
+//             error: true,
+//             canRetry: true,
+//           };
+
+//           return updatedMessages;
+//         });
+//       }
+//     }
+
+//     setIsThinking(false);
+//     if (!retryMessage) {
+//       setQuery('');
+//     }
+//   };
+
+//   const handleKeyPress = (e) => {
+//     if (e.key === 'Enter' && !e.shiftKey) {
+//       e.preventDefault();
+//       handleSubmit(e);
+//     }
+//   };
+
+//   const handleVoiceInput = () => {
+//     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+//     if (!SpeechRecognition) {
+//       alert('Speech Recognition API is not supported in this browser. Please use a modern browser like Chrome.');
+//       return;
+//     }
+
+//     const recognition = new SpeechRecognition();
+//     recognition.lang = 'en-US';
+//     recognition.interimResults = false;
+//     recognition.maxAlternatives = 1;
+
+//     recognition.onstart = () => {
+//       console.log('Voice recognition started. Speak now.');
+//       setIsRecording(true);
+//     };
+
+//     recognition.onresult = (event) => {
+//       const transcript = event.results[0][0].transcript;
+//       console.log('Voice Input:', transcript);
+//       setQuery(transcript);
+//     };
+
+//     recognition.onerror = (event) => {
+//       console.error('Voice Recognition Error:', event.error);
+
+//       if (event.error === 'no-speech') {
+//         alert('No speech detected. Please try again.');
+//       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+//         alert('Microphone access denied. Please allow microphone permissions in your browser settings.');
+//       } else {
+//         alert('An error occurred during voice recognition: ' + event.error);
+//       }
+//     };
+
+//     recognition.onend = () => {
+//       console.log('Voice recognition ended.');
+//       setIsRecording(false);
+//     };
+
+//     recognition.start();
+//   };
+
+//   const handleLogout = () => {
+//     const token = localStorage.getItem('token');
+
+//     axios.post(
+//       'https://aichatbot-backend-hxs8.onrender.com/api/chat/logout',
+//       {},
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//         },
+//       }
+//     ).then(() => {
+//       console.log('Logged out successfully');
+//     }).catch((err) => {
+//       console.error('Logout error:', err);
+//     });
+
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('firstName');
+//     setIsAuthenticated(false);
+//   };
+
+//   const handleRetry = (message) => (e) => {
+//     handleSubmit(e, message);
+//   };
+
+//   const handleCopy = (code, index) => {
+//     navigator.clipboard.writeText(code).then(() => {
+//       setCopiedStates((prev) => ({ ...prev, [index]: true }));
+//       setTimeout(() => {
+//         setCopiedStates((prev) => ({ ...prev, [index]: false }));
+//       }, 2000);
+//     }).catch((err) => {
+//       console.error('Failed to copy code:', err);
+//       alert('Failed to copy code. Please copy it manually.');
+//     });
+//   };
+
+//   const renderResponse = (response) => {
+//     if (!response) return null;
+
+//     const sanitizedResponse = DOMPurify.sanitize(response, { USE_PROFILES: { html: true } });
+
+//     if (sanitizedResponse.includes('```')) {
+//       const parts = sanitizedResponse.split('```');
+//       return parts.map((part, index) => {
+//         if (index % 2 === 1) {
+//           return (
+//             <div key={index} className="code-block">
+//               <button
+//                 className="copy-button"
+//                 onClick={() => handleCopy(part, index)}
+//                 title={copiedStates[index] ? 'Copied!' : 'Copy code'}
+//               >
+//                 {copiedStates[index] ? 'Copied!' : <FaCopy />}
+//               </button>
+//               <pre>{part}</pre>
+//             </div>
+//           );
+//         }
+//         return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+//       });
+//     }
+
+//     const tempRegex = /°[CF]|\btemperature\b/i;
+//     if (tempRegex.test(sanitizedResponse)) {
+//       const parts = sanitizedResponse.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
+//       const city = parts[1] || 'Unknown City';
+//       const tempMatch = sanitizedResponse.match(/[-?\d]+(\.\d+)?/);
+//       const tempUnit = sanitizedResponse.match(/[CF]/i)?.[0] || 'C';
+//       const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
+//       const skyDetails = parts[parts.length - 1] || 'N/A';
+
+//       return (
+//         <div className="temperature-container">
+//           <div className="temperature-header">Temperature of</div>
+//           <div className="temperature-city">{city}</div>
+//           <div className="temperature-value">{temperature}</div>
+//           <div className="sky-details">{skyDetails}</div>
+//         </div>
+//       );
+//     }
+
+//     const listRegex = /(\d+\.\s|[*-]\s)/;
+//     if (listRegex.test(sanitizedResponse)) {
+//       const lines = sanitizedResponse.split('\n');
+//       return (
+//         <div className="options-block">
+//           {lines.map((line, index) => {
+//             const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
+//             if (match) {
+//               const [, prefix, content] = match;
+//               const contentParts = content.split(/<\/?strong>/);
+//               let key = '';
+//               let rest = content;
+
+//               if (contentParts.length > 1) {
+//                 key = contentParts[1];
+//                 rest = content.replace(`<strong>${key}</strong>`, '');
+//               }
+
+//               return (
+//                 <div key={index} className="option-item">
+//                   <span className="option-key">{prefix}</span>
+//                   <span className="option-content">
+//                     <strong>{key}</strong>
+//                     <span dangerouslySetInnerHTML={{ __html: rest }} />
+//                   </span>
+//                 </div>
+//               );
+//             }
+//             return <div key={index} dangerouslySetInnerHTML={{ __html: line }} />;
+//           })}
+//         </div>
+//       );
+//     }
+
+//     return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
+//   };
+
+//   return (
+//     <div className="chat-screen">
+//       <div className="chat-container">
+//         <div className="chat-main">
+//           {showTitle && (
+//             <div className="chat-header">
+//               <div className="theme-toggle" onClick={toggleTheme}>
+//                 {theme === 'light' ? <FaMoon /> : <FaSun />}
+//               </div>
+//               <h2 className="chat-title">HUBA AI</h2>
+//               <div className="header-actions">
+//                 <button onClick={handleLogout} className="logout-button" title="Logout">
+//                   <FaSignOutAlt />
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+
+//           {showWelcome && (
+//             <div className="welcome-message">
+//               Welcome {firstName || 'User'} to HUBA AI
+//             </div>
+//           )}
+
+//           <div className="chat-content" ref={chatContentRef}>
+//             {!showWelcome && displayedMessages.map((message, index) => (
+//               <div key={index} className="chat-item">
+//                 <div className="message user-message">
+//                   <p>{message.question}</p>
+//                 </div>
+//                 {message.answer && (
+//                   <div className="message ai-message">
+//                     <p>{renderResponse(message.answer)}</p>
+//                     {message.error && message.canRetry && (
+//                       <button
+//                         onClick={handleRetry(message.question)}
+//                         className="retry-button"
+//                         title="Retry"
+//                       >
+//                         <FaRedo />
+//                       </button>
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {isThinking && <div className="thinking">Thinking...</div>}
+//           </div>
+
+//           <div className="chat-input-bar">
+//             <textarea
+//               placeholder="Ask anything..."
+//               value={query}
+//               onChange={(e) => setQuery(e.target.value)}
+//               onKeyPress={handleKeyPress}
+//               className="chat-input"
+//               rows="1"
+//             />
+//             <FaMicrophone
+//               className={`chat-icon ${isRecording ? 'recording' : ''}`}
+//               onClick={handleVoiceInput}
+//             />
+//             <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
+//               <FaPaperPlane />
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// function ChatBot() {
+//   const [isSplash, setIsSplash] = useState(true);
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [theme, setTheme] = useState(() => {
+//     const savedTheme = localStorage.getItem('theme');
+//     return savedTheme || 'light';
+//   });
+//   const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
+
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setIsSplash(false);
+//     }, 3000);
+//   }, []);
+
+//   const toggleTheme = () => {
+//     const newTheme = theme === 'light' ? 'dark' : 'light';
+//     setTheme(newTheme);
+//     localStorage.setItem('theme', newTheme);
+//   };
+
+//   return (
+//     <div className={`app ${theme}`}>
+//       {isSplash ? (
+//         <SplashScreen onAnimationEnd={!isSplash} />
+//       ) : (
+//         <Router>
+//           <Routes>
+//             <Route
+//               path="/"
+//               element={
+//                 !isAuthenticated ? (
+//                   <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
+//                 ) : (
+//                   <Navigate to="/chat" />
+//                 )
+//               }
+//             />
+//             <Route
+//               path="/chat"
+//               element={
+//                 isAuthenticated ? (
+//                   <ChatScreen
+//                     setIsAuthenticated={setIsAuthenticated}
+//                     firstName={firstName}
+//                     theme={theme}
+//                     toggleTheme={toggleTheme}
+//                   />
+//                 ) : (
+//                   <Navigate to="/" />
+//                 )
+//               }
+//             />
+//             <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
+//           </Routes>
+//         </Router>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default ChatBot;
+//////////////////////////////////////////
+
+
+//perfect
+//perfect for phone and screen
+
+// import React, { useState, useEffect, useRef } from 'react';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon } from 'react-icons/fa';
+// import DOMPurify from 'dompurify';
+// import './App.css';
+
+// const SplashScreen = ({ onAnimationEnd }) => {
+//   const [showSlogan, setShowSlogan] = useState(false);
+//   useEffect(() => {
+//     const sloganTimer = setTimeout(() => {
+//       setShowSlogan(true);
+//     }, 200);
+//     return () => clearTimeout(sloganTimer);
+//   }, []);
+//   return (
+//     <div className={`splash-screen ${onAnimationEnd ? 'hidden' : ''}`}>
+//       <div className="splash-content">
+//         <h1 className="splash-title">HUBA AI</h1>
+//         {showSlogan && <p className="splash-slogan">THINK . TALK . SOLVE</p>}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
+//   const [isSignup, setIsSignup] = useState(false);
+//   const [formData, setFormData] = useState({
+//     fullName: '',
+//     email: '',
+//     password: '',
+//   });
+//   const [error, setError] = useState('');
+//   const [signupSuccess, setSignupSuccess] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     setError('');
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+//     const dataToSend = {
+//       fullName: formData.fullName,
+//       email: formData.email,
+//       password: formData.password,
+//     };
+//     const url = isSignup
+//       ? 'https://aichatbot-backend-hxs8.onrender.com/api/auth/signup'
+//       : 'https://aichatbot-backend-hxs8.onrender.com/api/auth/login';
+//     try {
+//       console.log('Sending data to', url, ':', dataToSend);
+//       const response = await axios.post(url, isSignup ? dataToSend : { email: formData.email, password: formData.password });
+//       if (isSignup && response.status === 200) {
+//         setSignupSuccess(true);
+//         setError('Signup successful! Please log in.');
+//         return;
+//       }
+//       if (!isSignup && (response.status === 200 || response.status === 201)) {
+//         const token = response.data.token;
+//         console.log('Login response:', response.data);
+//         const loginFirstName = response.data.user.fullName.split(' ')[0] || 'User';
+//         localStorage.setItem('token', token);
+//         localStorage.setItem('firstName', loginFirstName);
+//         try {
+//           const userResponse = await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/user', {
+//             headers: { 'Authorization': `Bearer ${token}` },
+//           });
+//           console.log('User details fetched:', userResponse.data);
+//           const firstName = userResponse.data.firstName || loginFirstName;
+//           setFirstName(firstName);
+//           localStorage.setItem('firstName', firstName);
+//         } catch (userError) {
+//           console.error('Error fetching user details:', userError.response?.data || userError.message);
+//           setFirstName(loginFirstName);
+//         }
+//         setIsAuthenticated(true);
+//       }
+//     } catch (error) {
+//       const errorMessage = error.response?.data?.error || error.message || 'An unknown error occurred';
+//       console.error('Auth error:', error.response ? error.response.data : error.message);
+//       setError(errorMessage);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="auth-screen">
+//       <div className="auth-card">
+//         <h2 className="auth-title">{isSignup ? 'Sign Up' : 'Login'}</h2>
+//         {error && <p style={{ color: signupSuccess ? 'green' : 'red', textAlign: 'center' }}>{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           {isSignup && (
+//             <input
+//               type="text"
+//               name="fullName"
+//               placeholder="Full Name"
+//               value={formData.fullName}
+//               onChange={handleChange}
+//               required
+//               className="auth-input"
+//             />
+//           )}
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email"
+//             value={formData.email}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <input
+//             type="password"
+//             name="password"
+//             placeholder="Password"
+//             value={formData.password}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <button type="submit" className="auth-button" disabled={isLoading}>
+//             {isLoading ? (
+//               <span className="loading-text">
+//                 {isSignup ? 'Creating Account' : 'Logging In'} <span className="dots">...</span>
+//               </span>
+//             ) : (
+//               isSignup ? 'Sign Up' : 'Login'
+//             )}
+//           </button>
+//         </form>
+//         <p onClick={() => { setIsSignup(!isSignup); setSignupSuccess(false); setError(''); }} className="auth-toggle">
+//           {isSignup ? 'Already have an account? Login' : 'Need an account? Sign Up'}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
+//   const [query, setQuery] = useState('');
+//   const [displayedMessages, setDisplayedMessages] = useState([]);
+//   const [isThinking, setIsThinking] = useState(false);
+//   const [isRecording, setIsRecording] = useState(false);
+//   const [showWelcome, setShowWelcome] = useState(true);
+//   const [showTitle, setShowTitle] = useState(false);
+//   const chatContentRef = useRef(null);
+//   const [copiedStates, setCopiedStates] = useState({});
+
+//   useEffect(() => {
+//     const welcomeTimer = setTimeout(() => {
+//       setShowWelcome(false);
+//       setShowTitle(true);
+//       setDisplayedMessages([]);
+//     }, 3000);
+//     return () => clearTimeout(welcomeTimer);
+//   }, [firstName]);
+
+//   useEffect(() => {
+//     if (chatContentRef.current) {
+//       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+//     }
+//   }, [displayedMessages, isThinking]);
+
+//   const handleSubmit = async (e, retryMessage = null) => {
+//     e.preventDefault();
+//     const messageToSend = retryMessage || query;
+//     if (!messageToSend.trim()) return;
+//     const timestamp = new Date().toISOString();
+//     const newMessage = { question: messageToSend, answer: null, error: false, canRetry: false, timestamp };
+//     if (!retryMessage) {
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//     }
+//     setIsThinking(true);
+//     try {
+//       const token = localStorage.getItem('token');
+//       console.log('Sending message with token:', token);
+//       const response = await axios.post(
+//         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
+//         { question: messageToSend },
+//         {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`,
+//           },
+//         }
+//       );
+//       console.log('API Response:', response.data);
+//       setDisplayedMessages((prev) => {
+//         const updatedMessages = [...prev];
+//         const messageIndex = retryMessage
+//           ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//           : updatedMessages.length - 1;
+//         updatedMessages[messageIndex] = {
+//           ...updatedMessages[messageIndex],
+//           answer: response.data.response || 'No response data',
+//           error: false,
+//           canRetry: false,
+//         };
+//         return updatedMessages;
+//       });
+//     } catch (error) {
+//       console.error('Chat Error:', error.response ? error.response.data : error.message);
+//       if (error.response && error.response.status === 401) {
+//         console.log('401 Unauthorized: Token is invalid or expired. Error details:', error.response.data);
+//         localStorage.removeItem('token');
+//         setIsAuthenticated(false);
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Your session has expired. Please log in again.',
+//             error: true,
+//             canRetry: false,
+//           };
+//           return updatedMessages;
+//         });
+//       } else {
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Sorry, something went wrong. Please try again.',
+//             error: true,
+//             canRetry: true,
+//           };
+//           return updatedMessages;
+//         });
+//       }
+//     }
+//     setIsThinking(false);
+//     if (!retryMessage) {
+//       setQuery('');
+//     }
+//   };
+
+//   const handleKeyPress = (e) => {
+//     if (e.key === 'Enter' && !e.shiftKey) {
+//       e.preventDefault();
+//       handleSubmit(e);
+//     }
+//   };
+
+//   const handleVoiceInput = () => {
+//     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+//     if (!SpeechRecognition) {
+//       alert('Speech Recognition API is not supported in this browser. Please use a modern browser like Chrome.');
+//       return;
+//     }
+//     const recognition = new SpeechRecognition();
+//     recognition.lang = 'en-US';
+//     recognition.interimResults = false;
+//     recognition.maxAlternatives = 1;
+//     recognition.onstart = () => {
+//       console.log('Voice recognition started. Speak now.');
+//       setIsRecording(true);
+//     };
+//     recognition.onresult = (event) => {
+//       const transcript = event.results[0][0].transcript;
+//       console.log('Voice Input:', transcript);
+//       setQuery(transcript);
+//     };
+//     recognition.onerror = (event) => {
+//       console.error('Voice Recognition Error:', event.error);
+//       if (event.error === 'no-speech') {
+//         alert('No speech detected. Please try again.');
+//       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+//         alert('Microphone access denied. Please allow microphone permissions in your browser settings.');
+//       } else {
+//         alert('An error occurred during voice recognition: ' + event.error);
+//       }
+//     };
+//     recognition.onend = () => {
+//       console.log('Voice recognition ended.');
+//       setIsRecording(false);
+//     };
+//     recognition.start();
+//   };
+
+//   const handleLogout = () => {
+//     const token = localStorage.getItem('token');
+//     axios.post(
+//       'https://aichatbot-backend-hxs8.onrender.com/api/chat/logout',
+//       {},
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//         },
+//       }
+//     ).then(() => {
+//       console.log('Logged out successfully');
+//     }).catch((err) => {
+//       console.error('Logout error:', err);
+//     });
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('firstName');
+//     setIsAuthenticated(false);
+//   };
+
+//   const handleRetry = (message) => (e) => {
+//     handleSubmit(e, message);
+//   };
+
+//   const handleCopy = (code, index) => {
+//     navigator.clipboard.writeText(code).then(() => {
+//       setCopiedStates((prev) => ({ ...prev, [index]: true }));
+//       setTimeout(() => {
+//         setCopiedStates((prev) => ({ ...prev, [index]: false }));
+//       }, 2000);
+//     }).catch((err) => {
+//       console.error('Failed to copy code:', err);
+//       alert('Failed to copy code. Please copy it manually.');
+//     });
+//   };
+
+//   const renderResponse = (response) => {
+//     if (!response) return null;
+//     const sanitizedResponse = DOMPurify.sanitize(response, { USE_PROFILES: { html: true } });
+//     if (sanitizedResponse.includes('```')) {
+//       const parts = sanitizedResponse.split('```');
+//       return parts.map((part, index) => {
+//         if (index % 2 === 1) {
+//           return (
+//             <div key={index} className="code-block">
+//               <button
+//                 className="copy-button"
+//                 onClick={() => handleCopy(part, index)}
+//                 title={copiedStates[index] ? 'Copied!' : 'Copy code'}
+//               >
+//                 {copiedStates[index] ? 'Copied!' : <FaCopy />}
+//               </button>
+//               <pre>{part}</pre>
+//             </div>
+//           );
+//         }
+//         return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+//       });
+//     }
+//     const tempRegex = /°[CF]|\btemperature\b/i;
+//     if (tempRegex.test(sanitizedResponse)) {
+//       const parts = sanitizedResponse.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
+//       const city = parts[1] || 'Unknown City';
+//       const tempMatch = sanitizedResponse.match(/[-?\d]+(\.\d+)?/);
+//       const tempUnit = sanitizedResponse.match(/[CF]/i)?.[0] || 'C';
+//       const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
+//       const skyDetails = parts[parts.length - 1] || 'N/A';
+//       return (
+//         <div className="temperature-container">
+//           <div className="temperature-header">Temperature of</div>
+//           <div className="temperature-city">{city}</div>
+//           <div className="temperature-value">{temperature}</div>
+//           <div className="sky-details">{skyDetails}</div>
+//         </div>
+//       );
+//     }
+//     const listRegex = /(\d+\.\s|[*-]\s)/;
+//     if (listRegex.test(sanitizedResponse)) {
+//       const lines = sanitizedResponse.split('\n');
+//       return (
+//         <div className="options-block">
+//           {lines.map((line, index) => {
+//             const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
+//             if (match) {
+//               const [, prefix, content] = match;
+//               const contentParts = content.split(/<\/?strong>/);
+//               let key = '';
+//               let rest = content;
+//               if (contentParts.length > 1) {
+//                 key = contentParts[1];
+//                 rest = content.replace(`<strong>${key}</strong>`, '');
+//               }
+//               return (
+//                 <div key={index} className="option-item">
+//                   <span className="option-key">{prefix}</span>
+//                   <span className="option-content">
+//                     <strong>{key}</strong>
+//                     <span dangerouslySetInnerHTML={{ __html: rest }} />
+//                   </span>
+//                 </div>
+//               );
+//             }
+//             return <div key={index} dangerouslySetInnerHTML={{ __html: line }} />;
+//           })}
+//         </div>
+//       );
+//     }
+//     return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
+//   };
+
+//   return (
+//     <div className="chat-screen">
+//       <div className="chat-container">
+//         <div className="chat-main">
+//           {showTitle && (
+//             <div className="chat-header">
+//               <div className="theme-toggle" onClick={toggleTheme}>
+//                 {theme === 'light' ? <FaMoon /> : <FaSun />}
+//               </div>
+//               <h2 className="chat-title">HUBA AI</h2>
+//               <div className="header-actions">
+//                 <button onClick={handleLogout} className="logout-button" title="Logout">
+//                   <FaSignOutAlt />
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+//           {showWelcome && (
+//             <div className="welcome-message">
+//               Welcome {firstName || 'User'} to HUBA AI
+//             </div>
+//           )}
+//           <div className="chat-content" ref={chatContentRef}>
+//             {!showWelcome && displayedMessages.map((message, index) => (
+//               <div key={index} className="chat-item">
+//                 <div className="message user-message">
+//                   <p>{message.question}</p>
+//                 </div>
+//                 {message.answer && (
+//                   <div className="message ai-message">
+//                     <p>{renderResponse(message.answer)}</p>
+//                     {message.error && message.canRetry && (
+//                       <button
+//                         onClick={handleRetry(message.question)}
+//                         className="retry-button"
+//                         title="Retry"
+//                       >
+//                         <FaRedo />
+//                       </button>
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {isThinking && <div className="thinking">Thinking...</div>}
+//           </div>
+//           <div className="chat-input-bar">
+//             <textarea
+//               placeholder="Ask anything..."
+//               value={query}
+//               onChange={(e) => setQuery(e.target.value)}
+//               onKeyPress={handleKeyPress}
+//               className="chat-input"
+//               rows="1"
+//             />
+//             <FaMicrophone
+//               className={`chat-icon ${isRecording ? 'recording' : ''}`}
+//               onClick={handleVoiceInput}
+//             />
+//             <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
+//               <FaPaperPlane />
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// function ChatBot() {
+//   const [isSplash, setIsSplash] = useState(true);
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [theme, setTheme] = useState(() => {
+//     const savedTheme = localStorage.getItem('theme');
+//     return savedTheme || 'light';
+//   });
+//   const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
+
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setIsSplash(false);
+//     }, 3000);
+//   }, []);
+
+//   const toggleTheme = () => {
+//     const newTheme = theme === 'light' ? 'dark' : 'light';
+//     setTheme(newTheme);
+//     localStorage.setItem('theme', newTheme);
+//   };
+
+//   return (
+//     <div className={`app ${theme}`}>
+//       {isSplash ? (
+//         <SplashScreen onAnimationEnd={!isSplash} />
+//       ) : (
+//         <Router>
+//           <Routes>
+//             <Route
+//               path="/"
+//               element={
+//                 !isAuthenticated ? (
+//                   <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
+//                 ) : (
+//                   <Navigate to="/chat" />
+//                 )
+//               }
+//             />
+//             <Route
+//               path="/chat"
+//               element={
+//                 isAuthenticated ? (
+//                   <ChatScreen
+//                     setIsAuthenticated={setIsAuthenticated}
+//                     firstName={firstName}
+//                     theme={theme}
+//                     toggleTheme={toggleTheme}
+//                   />
+//                 ) : (
+//                   <Navigate to="/" />
+//                 )
+//               }
+//             />
+//             <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
+//           </Routes>
+//         </Router>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default ChatBot;
+
+
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon } from 'react-icons/fa';
 import DOMPurify from 'dompurify';
-import './App.css?v=9';
+import './App.css';
 
 const SplashScreen = ({ onAnimationEnd }) => {
   const [showSlogan, setShowSlogan] = useState(false);
-
   useEffect(() => {
-    // Show slogan after 1.2 seconds
     const sloganTimer = setTimeout(() => {
       setShowSlogan(true);
     }, 200);
-
     return () => clearTimeout(sloganTimer);
   }, []);
-
   return (
     <div className={`splash-screen ${onAnimationEnd ? 'hidden' : ''}`}>
       <div className="splash-content">
@@ -7049,7 +8751,6 @@ const SplashScreen = ({ onAnimationEnd }) => {
     </div>
   );
 };
-// Rest of the code remains unchanged...
 
 const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
   const [isSignup, setIsSignup] = useState(false);
@@ -7070,40 +8771,32 @@ const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
     const dataToSend = {
       fullName: formData.fullName,
       email: formData.email,
       password: formData.password,
     };
-
     const url = isSignup
       ? 'https://aichatbot-backend-hxs8.onrender.com/api/auth/signup'
       : 'https://aichatbot-backend-hxs8.onrender.com/api/auth/login';
-
     try {
       console.log('Sending data to', url, ':', dataToSend);
       const response = await axios.post(url, isSignup ? dataToSend : { email: formData.email, password: formData.password });
-
       if (isSignup && response.status === 200) {
         setSignupSuccess(true);
         setError('Signup successful! Please log in.');
         return;
       }
-
       if (!isSignup && (response.status === 200 || response.status === 201)) {
         const token = response.data.token;
         console.log('Login response:', response.data);
-
         const loginFirstName = response.data.user.fullName.split(' ')[0] || 'User';
         localStorage.setItem('token', token);
         localStorage.setItem('firstName', loginFirstName);
-
         try {
           const userResponse = await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/user', {
             headers: { 'Authorization': `Bearer ${token}` },
           });
-
           console.log('User details fetched:', userResponse.data);
           const firstName = userResponse.data.firstName || loginFirstName;
           setFirstName(firstName);
@@ -7112,7 +8805,6 @@ const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
           console.error('Error fetching user details:', userError.response?.data || userError.message);
           setFirstName(loginFirstName);
         }
-
         setIsAuthenticated(true);
       }
     } catch (error) {
@@ -7193,7 +8885,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
       setShowTitle(true);
       setDisplayedMessages([]);
     }, 3000);
-
     return () => clearTimeout(welcomeTimer);
   }, [firstName]);
 
@@ -7203,25 +8894,68 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
     }
   }, [displayedMessages, isThinking]);
 
+  const getLocalTimeAndDate = () => {
+    const now = new Date();
+    const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short',
+    };
+    return now.toLocaleString(undefined, options);
+  };
+
+  const handleTimeOrDateQuery = (question) => {
+    const lowerCaseQuestion = question.toLowerCase();
+    if (lowerCaseQuestion.includes('time')) {
+      const now = new Date();
+      const time = now.toLocaleTimeString();
+      const day = now.toLocaleDateString(undefined, { weekday: 'long' });
+      const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      const response = `Current Time: ${time}, Day: ${day}, Date: ${date}`;
+      const timestamp = new Date().toISOString();
+      const newMessage = { question, answer: response, error: false, canRetry: false, timestamp };
+      setDisplayedMessages((prev) => [...prev, newMessage]);
+      setIsThinking(false);
+      setQuery('');
+      return true;
+    } else if (lowerCaseQuestion.includes('date')) {
+      const now = new Date();
+      const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      const day = now.toLocaleDateString(undefined, { weekday: 'long' });
+      const time = now.toLocaleTimeString();
+      const response = `Current Date: ${date}, Day: ${day}, Time: ${time}`;
+      const timestamp = new Date().toISOString();
+      const newMessage = { question, answer: response, error: false, canRetry: false, timestamp };
+      setDisplayedMessages((prev) => [...prev, newMessage]);
+      setIsThinking(false);
+      setQuery('');
+      return true;
+    }
+    return false;
+  };
+
   const handleSubmit = async (e, retryMessage = null) => {
     e.preventDefault();
     const messageToSend = retryMessage || query;
-
     if (!messageToSend.trim()) return;
+
+    // Handle time or date queries locally
+    if (handleTimeOrDateQuery(messageToSend)) return;
 
     const timestamp = new Date().toISOString();
     const newMessage = { question: messageToSend, answer: null, error: false, canRetry: false, timestamp };
-
     if (!retryMessage) {
       setDisplayedMessages((prev) => [...prev, newMessage]);
     }
-
     setIsThinking(true);
-
     try {
       const token = localStorage.getItem('token');
       console.log('Sending message with token:', token);
-
       const response = await axios.post(
         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
         { question: messageToSend },
@@ -7232,45 +8966,37 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
           },
         }
       );
-
       console.log('API Response:', response.data);
-
       setDisplayedMessages((prev) => {
         const updatedMessages = [...prev];
         const messageIndex = retryMessage
           ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
           : updatedMessages.length - 1;
-
         updatedMessages[messageIndex] = {
           ...updatedMessages[messageIndex],
           answer: response.data.response || 'No response data',
           error: false,
           canRetry: false,
         };
-
         return updatedMessages;
       });
     } catch (error) {
       console.error('Chat Error:', error.response ? error.response.data : error.message);
-
       if (error.response && error.response.status === 401) {
         console.log('401 Unauthorized: Token is invalid or expired. Error details:', error.response.data);
         localStorage.removeItem('token');
         setIsAuthenticated(false);
-
         setDisplayedMessages((prev) => {
           const updatedMessages = [...prev];
           const messageIndex = retryMessage
             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
             : updatedMessages.length - 1;
-
           updatedMessages[messageIndex] = {
             ...updatedMessages[messageIndex],
             answer: 'Your session has expired. Please log in again.',
             error: true,
             canRetry: false,
           };
-
           return updatedMessages;
         });
       } else {
@@ -7279,19 +9005,16 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
           const messageIndex = retryMessage
             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
             : updatedMessages.length - 1;
-
           updatedMessages[messageIndex] = {
             ...updatedMessages[messageIndex],
             answer: 'Sorry, something went wrong. Please try again.',
             error: true,
             canRetry: true,
           };
-
           return updatedMessages;
         });
       }
     }
-
     setIsThinking(false);
     if (!retryMessage) {
       setQuery('');
@@ -7307,31 +9030,25 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
 
   const handleVoiceInput = () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
     if (!SpeechRecognition) {
       alert('Speech Recognition API is not supported in this browser. Please use a modern browser like Chrome.');
       return;
     }
-
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-US';
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-
     recognition.onstart = () => {
       console.log('Voice recognition started. Speak now.');
       setIsRecording(true);
     };
-
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       console.log('Voice Input:', transcript);
       setQuery(transcript);
     };
-
     recognition.onerror = (event) => {
       console.error('Voice Recognition Error:', event.error);
-
       if (event.error === 'no-speech') {
         alert('No speech detected. Please try again.');
       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
@@ -7340,18 +9057,15 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
         alert('An error occurred during voice recognition: ' + event.error);
       }
     };
-
     recognition.onend = () => {
       console.log('Voice recognition ended.');
       setIsRecording(false);
     };
-
     recognition.start();
   };
 
   const handleLogout = () => {
     const token = localStorage.getItem('token');
-
     axios.post(
       'https://aichatbot-backend-hxs8.onrender.com/api/chat/logout',
       {},
@@ -7365,7 +9079,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
     }).catch((err) => {
       console.error('Logout error:', err);
     });
-
     localStorage.removeItem('token');
     localStorage.removeItem('firstName');
     setIsAuthenticated(false);
@@ -7389,9 +9102,7 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
 
   const renderResponse = (response) => {
     if (!response) return null;
-
     const sanitizedResponse = DOMPurify.sanitize(response, { USE_PROFILES: { html: true } });
-
     if (sanitizedResponse.includes('```')) {
       const parts = sanitizedResponse.split('```');
       return parts.map((part, index) => {
@@ -7412,7 +9123,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
         return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
       });
     }
-
     const tempRegex = /°[CF]|\btemperature\b/i;
     if (tempRegex.test(sanitizedResponse)) {
       const parts = sanitizedResponse.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
@@ -7421,7 +9131,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
       const tempUnit = sanitizedResponse.match(/[CF]/i)?.[0] || 'C';
       const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
       const skyDetails = parts[parts.length - 1] || 'N/A';
-
       return (
         <div className="temperature-container">
           <div className="temperature-header">Temperature of</div>
@@ -7431,7 +9140,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
         </div>
       );
     }
-
     const listRegex = /(\d+\.\s|[*-]\s)/;
     if (listRegex.test(sanitizedResponse)) {
       const lines = sanitizedResponse.split('\n');
@@ -7444,12 +9152,10 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
               const contentParts = content.split(/<\/?strong>/);
               let key = '';
               let rest = content;
-
               if (contentParts.length > 1) {
                 key = contentParts[1];
                 rest = content.replace(`<strong>${key}</strong>`, '');
               }
-
               return (
                 <div key={index} className="option-item">
                   <span className="option-key">{prefix}</span>
@@ -7463,143 +9169,139 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
             return <div key={index} dangerouslySetInnerHTML={{ __html: line }} />;
           })}
         </div>
-          );
-              }
-          
-              return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
-            };
-          
-            return (
-              <div className="chat-screen">
-                <div className="chat-container">
-                  <div className="chat-main">
-                    {showTitle && (
-                      <div className="chat-header">
-                        <div className="theme-toggle" onClick={toggleTheme}>
-                          {theme === 'light' ? <FaMoon /> : <FaSun />}
-                        </div>
-                        <h2 className="chat-title">HUBA AI</h2>
-                        <div className="header-actions">
-                          <button onClick={handleLogout} className="logout-button" title="Logout">
-                            <FaSignOutAlt />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-          
-                    {showWelcome && (
-                      <div className="welcome-message">
-                        Welcome {firstName || 'User'} to HUBA AI
-                      </div>
-                    )}
-          
-                    <div className="chat-content" ref={chatContentRef}>
-                      {!showWelcome && displayedMessages.map((message, index) => (
-                        <div key={index} className="chat-item">
-                          <div className="message user-message">
-                            <p>{message.question}</p>
-                          </div>
-                          {message.answer && (
-                            <div className="message ai-message">
-                              <p>{renderResponse(message.answer)}</p>
-                              {message.error && message.canRetry && (
-                                <button
-                                  onClick={handleRetry(message.question)}
-                                  className="retry-button"
-                                  title="Retry"
-                                >
-                                  <FaRedo />
-                                </button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                      {isThinking && <div className="thinking">Thinking...</div>}
-                    </div>
-          
-                    <div className="chat-input-bar">
-                      <textarea
-                        placeholder="Ask anything..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="chat-input"
-                        rows="1"
-                      />
-                      <FaMicrophone
-                        className={`chat-icon ${isRecording ? 'recording' : ''}`}
-                        onClick={handleVoiceInput}
-                      />
-                      <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
-                        <FaPaperPlane />
-                      </button>
-                    </div>
-                  </div>
-                </div>
+      );
+    }
+    return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
+  };
+
+  return (
+    <div className="chat-screen">
+      <div className="chat-container">
+        <div className="chat-main">
+          {showTitle && (
+            <div className="chat-header">
+              <div className="theme-toggle" onClick={toggleTheme}>
+                {theme === 'light' ? <FaMoon /> : <FaSun />}
               </div>
-            );
-          };
-          
-          function ChatBot() {
-            const [isSplash, setIsSplash] = useState(true);
-            const [isAuthenticated, setIsAuthenticated] = useState(false);
-            const [theme, setTheme] = useState(() => {
-              const savedTheme = localStorage.getItem('theme');
-              return savedTheme || 'light';
-            });
-            const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
-          
-            useEffect(() => {
-              setTimeout(() => {
-                setIsSplash(false);
-              }, 3000);
-            }, []);
-          
-            const toggleTheme = () => {
-              const newTheme = theme === 'light' ? 'dark' : 'light';
-              setTheme(newTheme);
-              localStorage.setItem('theme', newTheme);
-            };
-          
-            return (
-              <div className={`app ${theme}`}>
-                {isSplash ? (
-                  <SplashScreen onAnimationEnd={!isSplash} />
-                ) : (
-                  <Router>
-                    <Routes>
-                      <Route
-                        path="/"
-                        element={
-                          !isAuthenticated ? (
-                            <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
-                          ) : (
-                            <Navigate to="/chat" />
-                          )
-                        }
-                      />
-                      <Route
-                        path="/chat"
-                        element={
-                          isAuthenticated ? (
-                            <ChatScreen
-                              setIsAuthenticated={setIsAuthenticated}
-                              firstName={firstName}
-                              theme={theme}
-                              toggleTheme={toggleTheme}
-                            />
-                          ) : (
-                            <Navigate to="/" />
-                          )
-                        }
-                      />
-                      <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
-                    </Routes>
-                  </Router>
+              <h2 className="chat-title">HUBA AI</h2>
+              <div className="header-actions">
+                <button onClick={handleLogout} className="logout-button" title="Logout">
+                  <FaSignOutAlt />
+                </button>
+              </div>
+            </div>
+          )}
+          {showWelcome && (
+            <div className="welcome-message">
+              Welcome {firstName || 'User'} to HUBA AI
+            </div>
+          )}
+          <div className="chat-content" ref={chatContentRef}>
+            {!showWelcome && displayedMessages.map((message, index) => (
+              <div key={index} className="chat-item">
+                <div className="message user-message">
+                  <p>{message.question}</p>
+                </div>
+                {message.answer && (
+                  <div className="message ai-message">
+                    <p>{renderResponse(message.answer)}</p>
+                    {message.error && message.canRetry && (
+                      <button
+                        onClick={handleRetry(message.question)}
+                        className="retry-button"
+                        title="Retry"
+                      >
+                        <FaRedo />
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
-            );
-          }
-          
-          export default ChatBot;
+            ))}
+            {isThinking && <div className="thinking">Thinking...</div>}
+          </div>
+          <div className="chat-input-bar">
+            <textarea
+              placeholder="Ask anything..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="chat-input"
+              rows="1"
+            />
+            <FaMicrophone
+              className={`chat-icon ${isRecording ? 'recording' : ''}`}
+              onClick={handleVoiceInput}
+            />
+            <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
+              <FaPaperPlane />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+function ChatBot() {
+  const [isSplash, setIsSplash] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme || 'light';
+  });
+  const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsSplash(false);
+    }, 3000);
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  return (
+    <div className={`app ${theme}`}>
+      {isSplash ? (
+        <SplashScreen onAnimationEnd={!isSplash} />
+      ) : (
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                !isAuthenticated ? (
+                  <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
+                ) : (
+                  <Navigate to="/chat" />
+                )
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                isAuthenticated ? (
+                  <ChatScreen
+                    setIsAuthenticated={setIsAuthenticated}
+                    firstName={firstName}
+                    theme={theme}
+                    toggleTheme={toggleTheme}
+                  />
+                ) : (
+                  <Navigate to="/" />
+                )
+              }
+            />
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
+          </Routes>
+        </Router>
+      )}
+    </div>
+  );
+}
+
+export default ChatBot;

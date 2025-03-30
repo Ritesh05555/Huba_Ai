@@ -61,11 +61,11 @@ html, body {
 }
 
 .splash-slogan {
-  font-size: 1.2rem; /* Reduced font size */
+  font-size: 1.2rem;
   font-weight: 600;
   color: #ffffff;
   opacity: 0;
-  animation: fadeInOnly 1.5s ease-out forwards 1s; /* Simple fade-in */
+  animation: fadeInOnly 1.5s ease-out forwards 1s;
 }
 
 /* Animations */
@@ -84,8 +84,6 @@ html, body {
   from { opacity: 1; }
   to { opacity: 0; }
 }
-
-/* Rest of the CSS remains unchanged... */
 
 /* Auth Screen */
 .auth-screen {
@@ -114,8 +112,6 @@ html, body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
-
-/* Rest of the CSS remains unchanged */
 
 .auth-title {
   color: #111827;
@@ -246,18 +242,22 @@ html, body {
     padding: 1.5rem;
     width: 95%;
   }
+
   .auth-title {
     font-size: 1.25rem;
     margin-bottom: 1rem;
   }
+
   .auth-input {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
+
   .auth-button {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
+
   .auth-toggle {
     font-size: 0.85rem;
   }
@@ -308,28 +308,33 @@ html, body {
   width: 100%;
 }
 
+/* Updated Chat Header with increased size */
 .chat-header {
-  padding: 1rem;
+  padding: 1.3rem; /* Increased from 1rem to 1.5rem for more vertical and horizontal space */
   border-bottom: 1px solid #e5e7eb;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  animation: fadeIn 1s ease-in;
   flex-shrink: 0;
   position: relative;
+  opacity: 0;
+  animation: fadeIn 1s ease-in 1s forwards;
 }
 
 .app.dark .chat-header {
   border-bottom: 1px solid #404040;
 }
 
+/* Updated Chat Title with increased font size */
 .chat-title {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.5rem; /* Increased from 1.25rem to 1.5rem */
   font-weight: 600;
   color: #111827;
   text-align: center;
-  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .app.dark .chat-title {
@@ -340,6 +345,8 @@ html, body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  position: absolute;
+  right: 1rem;
 }
 
 .welcome-message {
@@ -350,11 +357,30 @@ html, body {
   font-size: 1.5rem;
   font-weight: 500;
   color: #6b7280;
-  animation: fadeOut 4s forwards;
+  animation: fadeOut 3s forwards;
 }
 
 .app.dark .welcome-message {
   color: #9ca3af;
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .chat-content {
@@ -551,7 +577,7 @@ html, body {
   color: #ffffff;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.5px
 }
 
 .app.dark .temperature-header {
@@ -889,26 +915,26 @@ html, body {
   100% { transform: scale(1.2); }
 }
 
-/* Theme Toggle inside Chat Header */
+/* Updated Theme Toggle inside Chat Header */
 .theme-toggle {
   font-size: 1.25rem;
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50%;
-  background: none; /* Removed background */
-  border: none; /* Removed border */
-  box-shadow: none; /* Removed shadow for consistency */
+  background: none;
+  border: none;
+  box-shadow: none;
   transition: color 0.3s ease;
   position: absolute;
-  left: 1rem;
+  left: 1rem; /* Position on the left */
   top: 50%;
   transform: translateY(-50%);
 }
 
 .app.dark .theme-toggle {
-  background: none; /* Removed background */
-  border: none; /* Removed border */
-  box-shadow: none; /* Removed shadow */
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
 .app.light .theme-toggle {
@@ -921,12 +947,12 @@ html, body {
 
 .theme-toggle:hover {
   color: #3b82f6;
-  background: none; /* Removed background on hover */
+  background: none;
 }
 
 .app.dark .theme-toggle:hover {
   color: #fde047;
-  background: none; /* Removed background on hover */
+  background: none;
 }
 
 @media (max-width: 480px) {
@@ -962,6 +988,9 @@ html, body {
 @media (max-width: 480px) {
   .logout-button {
     font-size: 1.1rem;
+  }
+  .header-actions {
+    right: 0.5rem; /* Adjust position for smaller screens */
   }
 }
 
