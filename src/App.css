@@ -309,16 +309,75 @@ html, body {
 }
 
 /* Updated Chat Header with increased size */
+/* Chat Header */
 .chat-header {
-  padding: 1.5rem; /* Increased from 1rem to 1.5rem for more vertical and horizontal space */
+  padding: 1rem; /* Reduced padding slightly for consistency */
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  position: relative;
+  position: sticky; /* Changed to sticky to ensure it stays at the top */
+  top: 0;
+  background: #ffffff; /* Ensure background matches chat-container */
+  z-index: 20; /* Ensure it stays above other content */
   opacity: 0;
   animation: fadeIn 1s ease-in 1s forwards;
+  box-sizing: border-box;
+  min-height: 60px; /* Ensure a minimum height to accommodate content */
+}
+
+.app.dark .chat-header {
+  border-bottom: 1px solid #404040;
+  background: #1f2937;
+}
+
+/* Chat Title */
+.chat-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  text-align: center;
+  position: relative; /* Changed to relative to avoid overlap issues */
+  line-height: 1.2; /* Ensure text doesn’t get clipped */
+}
+
+.app.dark .chat-title {
+  color: #f3f4f6;
+}
+
+/* Header Actions (e.g., logout button) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  box-shadow: none;
+  transition: color 0.3s ease;
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.app.dark .theme-toggle {
+  background: none;
+  border: none;
+  box-shadow: none
 }
 
 .app.dark .chat-header {
