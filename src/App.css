@@ -354,7 +354,7 @@ html, body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 500;
   color: #6b7280;
   animation: fadeOut 3s forwards;
@@ -577,7 +577,7 @@ html, body {
   color: #ffffff;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
-  letter-spacing: 1.5px
+  letter-spacing: 1.5px;
 }
 
 .app.dark .temperature-header {
@@ -622,15 +622,19 @@ html, body {
     width: 160px;
     height: 160px;
   }
+
   .temperature-header {
     font-size: 0.9rem;
   }
+
   .temperature-city {
     font-size: 1rem;
   }
+
   .temperature-value {
     font-size: 1.25rem;
   }
+
   .sky-details {
     font-size: 0.9rem;
   }
@@ -722,28 +726,35 @@ html, body {
     box-shadow: none;
     height: 100dvh;
   }
+
   .chat-header {
     padding: 0.75rem;
   }
+
   .chat-title {
     font-size: 1.1rem;
   }
+
   .welcome-message {
     font-size: 1.25rem;
   }
+
   .chat-content {
     padding: 0.75rem;
   }
+
   .message {
     max-width: 80%;
     padding: 0.5rem 0.75rem;
   }
+
   .user-message {
     max-width: 70%;
     min-width: 80px;
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
   }
+
   .message p {
     font-size: 0.9rem;
   }
@@ -753,28 +764,35 @@ html, body {
   .chat-container {
     height: 100dvh;
   }
+
   .chat-header {
     padding: 0.5rem;
   }
+
   .chat-title {
     font-size: 1rem;
   }
+
   .welcome-message {
     font-size: 1rem;
   }
+
   .chat-content {
     padding: 0.5rem;
   }
+
   .message {
     max-width: 85%;
     padding: 0.5rem;
   }
+
   .user-message {
     max-width: 75%;
     min-width: 60px;
     padding: 0.5rem;
     font-size: 0.85rem;
   }
+
   .message p {
     font-size: 0.85rem;
   }
@@ -895,15 +913,18 @@ html, body {
   .chat-input-bar {
     padding: 0.5rem;
   }
+
   .chat-input {
     font-size: 0.9rem;
     min-height: 36px;
     max-height: 80px;
   }
+
   .chat-icon {
     margin: 0 0.3rem;
     font-size: 1.1rem;
   }
+
   .chat-send-button {
     padding: 0.3rem;
   }
@@ -989,6 +1010,7 @@ html, body {
   .logout-button {
     font-size: 1.1rem;
   }
+
   .header-actions {
     right: 0.5rem; /* Adjust position for smaller screens */
   }
