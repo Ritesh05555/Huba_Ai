@@ -310,7 +310,7 @@ html, body {
 
 /* Updated Chat Header with increased size */
 .chat-header {
-  padding: 1.3rem; /* Increased from 1rem to 1.5rem for more vertical and horizontal space */
+  padding: 1.5rem; /* Increased from 1rem to 1.5rem for more vertical and horizontal space */
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   justify-content: center;
