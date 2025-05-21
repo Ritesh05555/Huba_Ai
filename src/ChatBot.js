@@ -9306,10 +9306,1386 @@
 
 // export default ChatBot;
 
+// import React, { useState, useEffect, useRef } from 'react';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon } from 'react-icons/fa';
+// import DOMPurify from 'dompurify';
+// import './App.css';
+
+// const SplashScreen = ({ onAnimationEnd }) => {
+//   const [showSlogan, setShowSlogan] = useState(false);
+//   useEffect(() => {
+//     const sloganTimer = setTimeout(() => {
+//       setShowSlogan(true);
+//     }, 200);
+//     return () => clearTimeout(sloganTimer);
+//   }, []);
+//   return (
+//     <div className={`splash-screen ${onAnimationEnd ? 'hidden' : ''}`}>
+//       <div className="splash-content">
+//         <h1 className="splash-title">HUBA AI</h1>
+//         {showSlogan && <p className="splash-slogan">THINK . TALK . SOLVE</p>}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
+//   const [isSignup, setIsSignup] = useState(false);
+//   const [formData, setFormData] = useState({
+//     fullName: '',
+//     email: '',
+//     password: '',
+//   });
+//   const [error, setError] = useState('');
+//   const [signupSuccess, setSignupSuccess] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     setError('');
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+//     const dataToSend = {
+//       fullName: formData.fullName,
+//       email: formData.email,
+//       password: formData.password,
+//     };
+//     const url = isSignup
+//       ? 'https://aichatbot-backend-hxs8.onrender.com/api/auth/signup'
+//       : 'https://aichatbot-backend-hxs8.onrender.com/api/auth/login';
+//     try {
+//       console.log('Sending data to', url, ':', dataToSend);
+//       const response = await axios.post(url, isSignup ? dataToSend : { email: formData.email, password: formData.password });
+//       if (isSignup && response.status === 200) {
+//         setSignupSuccess(true);
+//         setError('Signup successful! Please log in.');
+//         setFormData({ fullName: '', email: '', password: '' });
+//         return;
+//       }
+//       if (!isSignup && (response.status === 200 || response.status === 201)) {
+//         const token = response.data.token;
+//         console.log('Login response:', response.data);
+//         const loginFirstName = response.data.user.fullName.split(' ')[0] || 'User';
+//         localStorage.setItem('token', token);
+//         localStorage.setItem('firstName', loginFirstName);
+//         try {
+//           const userResponse = await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/user', {
+//             headers: { 'Authorization': `Bearer ${token}` },
+//           });
+//           console.log('User details fetched:', userResponse.data);
+//           const firstName = userResponse.data.firstName || loginFirstName;
+//           setFirstName(firstName);
+//           localStorage.setItem('firstName', firstName);
+//         } catch (userError) {
+//           console.error('Error fetching user details:', userError.response?.data || userError.message);
+//           setFirstName(loginFirstName);
+//         }
+//         setIsAuthenticated(true);
+//       }
+//     } catch (error) {
+//       const errorMessage = error.response?.data?.error || error.message || 'An unknown error occurred';
+//       console.error('Auth error:', error.response ? error.response.data : error.message);
+//       setError(errorMessage);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="auth-screen">
+//       <div className="auth-card">
+//         <h2 className="auth-title">{isSignup ? 'Sign Up' : 'Login'}</h2>
+//         {error && <p style={{ color: signupSuccess ? 'green' : 'red', textAlign: 'center' }}>{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           {isSignup && (
+//             <input
+//               type="text"
+//               name="fullName"
+//               placeholder="Full Name"
+//               value={formData.fullName}
+//               onChange={handleChange}
+//               required
+//               className="auth-input"
+//             />
+//           )}
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email"
+//             value={formData.email}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <input
+//             type="password"
+//             name="password"
+//             placeholder="Password"
+//             value={formData.password}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <button type="submit" className="auth-button" disabled={isLoading}>
+//             {isLoading ? (
+//               <span className="loading-text">
+//                 {isSignup ? 'Creating Account' : 'Logging In'} <span className="dots">...</span>
+//               </span>
+//             ) : (
+//               isSignup ? 'Sign Up' : 'Login'
+//             )}
+//           </button>
+//         </form>
+//         <p onClick={() => { setIsSignup(!isSignup); setSignupSuccess(false); setError(''); }} className="auth-toggle">
+//           {isSignup ? 'Already have an account? Login' : 'Need an account? Sign Up'}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
+//   const [query, setQuery] = useState('');
+//   const [displayedMessages, setDisplayedMessages] = useState([]);
+//   const [isThinking, setIsThinking] = useState(false);
+//   const [isRecording, setIsRecording] = useState(false);
+//   const [showWelcome, setShowWelcome] = useState(true);
+//   const [showTitle, setShowTitle] = useState(true);
+//   const chatContentRef = useRef(null);
+//   const [copiedStates, setCopiedStates] = useState({});
+
+//   useEffect(() => {
+//     // Show welcome message briefly but allow immediate interaction
+//     setShowWelcome(true);
+//     setShowTitle(true);
+//   }, [firstName]);
+
+//   useEffect(() => {
+//     if (chatContentRef.current) {
+//       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+//     }
+//   }, [displayedMessages, isThinking]);
+
+//   const getLocalTimeAndDate = () => {
+//     const now = new Date();
+//     const options = {
+//       weekday: 'long',
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit',
+//       second: '2-digit',
+//       timeZoneName: 'short',
+//     };
+//     return now.toLocaleString(undefined, options);
+//   };
+
+//   const handleTimeOrDateQuery = (question) => {
+//     const lowerCaseQuestion = question.toLowerCase().trim();
+//     const predefinedQuestions = {
+//       "what is today's date": () => {
+//         const now = new Date();
+//         const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+//         return `Today's date is ${date}.`;
+//       },
+//       "what is date today": () => {
+//         const now = new Date();
+//         const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+//         return `Today's date is ${date}.`;
+//       },
+//       "what is now time": () => {
+//         const now = new Date();
+//         const time = now.toLocaleTimeString();
+//         return `The current time is ${time}.`;
+//       },
+//       "what is current time": () => {
+//         const now = new Date();
+//         const time = now.toLocaleTimeString();
+//         return `The current time is ${time}.`;
+//       },
+//     };
+
+//     if (predefinedQuestions[lowerCaseQuestion]) {
+//       const response = predefinedQuestions[lowerCaseQuestion]();
+//       const timestamp = new Date().toISOString();
+//       const newMessage = { question, answer: response, error: false, canRetry: false, timestamp };
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//       setIsThinking(false);
+//       setQuery('');
+//       return true;
+//     }
+
+//     // If the question contains "time" or "date" but doesn't match predefined questions, let the backend handle it
+//     if (lowerCaseQuestion.includes('time') || lowerCaseQuestion.includes('date')) {
+//       return false;
+//     }
+
+//     return false;
+//   };
+
+//   const handleSubmit = async (e, retryMessage = null) => {
+//     e.preventDefault();
+//     const messageToSend = retryMessage || query;
+//     if (!messageToSend.trim()) return;
+
+//     // Handle predefined time or date queries locally
+//     if (handleTimeOrDateQuery(messageToSend)) return;
+
+//     const timestamp = new Date().toISOString();
+//     const newMessage = { question: messageToSend, answer: null, error: false, canRetry: false, timestamp };
+//     if (!retryMessage) {
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//     }
+//     setIsThinking(true);
+//     try {
+//       const token = localStorage.getItem('token');
+//       console.log('Sending message with token:', token);
+//       const response = await axios.post(
+//         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
+//         { question: messageToSend },
+//         {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`,
+//           },
+//         }
+//       );
+//       console.log('API Response:', response.data);
+//       setDisplayedMessages((prev) => {
+//         const updatedMessages = [...prev];
+//         const messageIndex = retryMessage
+//           ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//           : updatedMessages.length - 1;
+//         updatedMessages[messageIndex] = {
+//           ...updatedMessages[messageIndex],
+//           answer: response.data.response || 'No response data',
+//           error: false,
+//           canRetry: false,
+//         };
+//         return updatedMessages;
+//       });
+//     } catch (error) {
+//       console.error('Chat Error:', error.response ? error.response.data : error.message);
+//       if (error.response && error.response.status === 401) {
+//         console.log('401 Unauthorized: Token is invalid or expired. Error details:', error.response.data);
+//         localStorage.removeItem('token');
+//         setIsAuthenticated(false);
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Your session has expired. Please log in again.',
+//             error: true,
+//             canRetry: false,
+//           };
+//           return updatedMessages;
+//         });
+//       } else {
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Sorry, something went wrong. Please try again.',
+//             error: true,
+//             canRetry: true,
+//           };
+//           return updatedMessages;
+//         });
+//       }
+//     }
+//     setIsThinking(false);
+//     if (!retryMessage) {
+//       setQuery('');
+//     }
+//   };
+
+//   const handleKeyPress = (e) => {
+//     if (e.key === 'Enter' && !e.shiftKey) {
+//       e.preventDefault();
+//       handleSubmit(e);
+//     }
+//   };
+
+//   const handleVoiceInput = () => {
+//     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+//     if (!SpeechRecognition) {
+//       alert('Speech Recognition API is not supported in this browser. Please use a modern browser like Chrome.');
+//       return;
+//     }
+//     const recognition = new SpeechRecognition();
+//     recognition.lang = 'en-US';
+//     recognition.interimResults = false;
+//     recognition.maxAlternatives = 1;
+//     recognition.onstart = () => {
+//       console.log('Voice recognition started. Speak now.');
+//       setIsRecording(true);
+//     };
+//     recognition.onresult = (event) => {
+//       const transcript = event.results[0][0].transcript;
+//       console.log('Voice Input:', transcript);
+//       setQuery(transcript);
+//     };
+//     recognition.onerror = (event) => {
+//       console.error('Voice Recognition Error:', event.error);
+//       if (event.error === 'no-speech') {
+//         alert('No speech detected. Please try again.');
+//       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+//         alert('Microphone access denied. Please allow microphone permissions in your browser settings.');
+//       } else {
+//         alert('An error occurred during voice recognition: ' + event.error);
+//       }
+//     };
+//     recognition.onend = () => {
+//       console.log('Voice recognition ended.');
+//       setIsRecording(false);
+//     };
+//     recognition.start();
+//   };
+
+//   const handleLogout = () => {
+//     const token = localStorage.getItem('token');
+//     axios.post(
+//       'https://aichatbot-backend-hxs8.onrender.com/api/chat/logout',
+//       {},
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//         },
+//       }
+//     ).then(() => {
+//       console.log('Logged out successfully');
+//     }).catch((err) => {
+//       console.error('Logout error:', err);
+//     });
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('firstName');
+//     setIsAuthenticated(false);
+//   };
+
+//   const handleRetry = (message) => (e) => {
+//     handleSubmit(e, message);
+//   };
+
+//   const handleCopy = (code, index) => {
+//     navigator.clipboard.writeText(code).then(() => {
+//       setCopiedStates((prev) => ({ ...prev, [index]: true }));
+//       setTimeout(() => {
+//         setCopiedStates((prev) => ({ ...prev, [index]: false }));
+//       }, 2000);
+//     }).catch((err) => {
+//       console.error('Failed to copy code:', err);
+//       alert('Failed to copy code. Please copy it manually.');
+//     });
+//   };
+
+//   const renderResponse = (response) => {
+//     if (!response) return null;
+//     const sanitizedResponse = DOMPurify.sanitize(response, { USE_PROFILES: { html: true } });
+//     if (sanitizedResponse.includes('```')) {
+//       const parts = sanitizedResponse.split('```');
+//       return parts.map((part, index) => {
+//         if (index % 2 === 1) {
+//           return (
+//             <div key={index} className="code-block">
+//               <button
+//                 className="copy-button"
+//                 onClick={() => handleCopy(part, index)}
+//                 title={copiedStates[index] ? 'Copied!' : 'Copy code'}
+//               >
+//                 {copiedStates[index] ? 'Copied!' : <FaCopy />}
+//               </button>
+//               <pre>{part}</pre>
+//             </div>
+//           );
+//         }
+//         return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+//       });
+//     }
+//     const tempRegex = /°[CF]|\btemperature\b/i;
+//     if (tempRegex.test(sanitizedResponse)) {
+//       const parts = sanitizedResponse.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
+//       const city = parts[1] || 'Unknown City';
+//       const tempMatch = sanitizedResponse.match(/[-?\d]+(\.\d+)?/);
+//       const tempUnit = sanitizedResponse.match(/[CF]/i)?.[0] || 'C';
+//       const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
+//       const skyDetails = parts[parts.length - 1] || 'N/A';
+//       return (
+//         <div className="temperature-container">
+//           <div className="temperature-header">Temperature of</div>
+//           <div className="temperature-city">{city}</div>
+//           <div className="temperature-value">{temperature}</div>
+//           <div className="sky-details">{skyDetails}</div>
+//         </div>
+//       );
+//     }
+//     const listRegex = /(\d+\.\s|[*-]\s)/;
+//     if (listRegex.test(sanitizedResponse)) {
+//       const lines = sanitizedResponse.split('\n');
+//       return (
+//         <div className="options-block">
+//           {lines.map((line, index) => {
+//             const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
+//             if (match) {
+//               const [, prefix, content] = match;
+//               const contentParts = content.split(/<\/?strong>/);
+//               let key = '';
+//               let rest = content;
+//               if (contentParts.length > 1) {
+//                 key = contentParts[1];
+//                 rest = content.replace(`<strong>${key}</strong>`, '');
+//               }
+//               return (
+//                 <div key={index} className="option-item">
+//                   <span className="option-key">{prefix}</span>
+//                   <span className="option-content">
+//                     <strong>{key}</strong>
+//                     <span dangerouslySetInnerHTML={{ __html: rest }} />
+//                   </span>
+//                 </div>
+//               );
+//             }
+//             return <div key={index} dangerouslySetInnerHTML={{ __html: line }} />;
+//           })}
+//         </div>
+//       );
+//     }
+//     return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
+//   };
+
+//   return (
+//     <div className="chat-screen">
+//       <div className="chat-container">
+//         <div className="chat-main">
+//           {showTitle && (
+//             <div className="chat-header">
+//               <div className="theme-toggle" onClick={toggleTheme}>
+//                 {theme === 'light' ? <FaMoon /> : <FaSun />}
+//               </div>
+//               <h2 className="chat-title">HUBA AI</h2>
+//               <div className="header-actions">
+//                 <button onClick={handleLogout} className="logout-button" title="Logout">
+//                   <FaSignOutAlt />
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+//           {showWelcome && (
+//             <div className="welcome-message">
+//               Welcome {firstName || 'User'} to HUBA AI
+//             </div>
+//           )}
+//           <div className="chat-content" ref={chatContentRef}>
+//             {!showWelcome && displayedMessages.length === 0 && (
+//               <div className="welcome-message">Start by asking a question!</div>
+//             )}
+//             {displayedMessages.map((message, index) => (
+//               <div key={index} className="chat-item">
+//                 <div className="message user-message">
+//                   <p>{message.question}</p>
+//                 </div>
+//                 {message.answer && (
+//                   <div className="message ai-message">
+//                     <p>{renderResponse(message.answer)}</p>
+//                     {message.error && message.canRetry && (
+//                       <button
+//                         onClick={handleRetry(message.question)}
+//                         className="retry-button"
+//                         title="Retry"
+//                       >
+//                         <FaRedo />
+//                       </button>
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {isThinking && <div className="thinking">Thinking...</div>}
+//           </div>
+//           <div className="chat-input-bar">
+//             <textarea
+//               placeholder="Ask anything..."
+//               value={query}
+//               onChange={(e) => setQuery(e.target.value)}
+//               onKeyPress={handleKeyPress}
+//               className="chat-input"
+//               rows="1"
+//             />
+//             <FaMicrophone
+//               className={`chat-icon ${isRecording ? 'recording' : ''}`}
+//               onClick={handleVoiceInput}
+//             />
+//             <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
+//               <FaPaperPlane />
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// function ChatBot() {
+//   const [isSplash, setIsSplash] = useState(true);
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [theme, setTheme] = useState(() => {
+//     const savedTheme = localStorage.getItem('theme');
+//     return savedTheme || 'light';
+//   });
+//   const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
+
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setIsSplash(false);
+//     }, 3000);
+//   }, []);
+
+//   const toggleTheme = () => {
+//     const newTheme = theme === 'light' ? 'dark' : 'light';
+//     setTheme(newTheme);
+//     localStorage.setItem('theme', newTheme);
+//   };
+
+//   return (
+//     <div className={`app ${theme}`}>
+//       {isSplash ? (
+//         <SplashScreen onAnimationEnd={!isSplash} />
+//       ) : (
+//         <Router>
+//           <Routes>
+//             <Route
+//               path="/"
+//               element={
+//                 !isAuthenticated ? (
+//                   <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
+//                 ) : (
+//                   <Navigate to="/chat" />
+//                 )
+//               }
+//             />
+//             <Route
+//               path="/chat"
+//               element={
+//                 isAuthenticated ? (
+//                   <ChatScreen
+//                     setIsAuthenticated={setIsAuthenticated}
+//                     firstName={firstName}
+//                     theme={theme}
+//                     toggleTheme={toggleTheme}
+//                   />
+//                 ) : (
+//                   <Navigate to="/" />
+//                 )
+//               }
+//             />
+//             <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
+//           </Routes>
+//         </Router>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default ChatBot;
+
+// import React, { useState, useEffect, useRef } from 'react';
+// import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+// import axios from 'axios';
+// import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon, FaCamera } from 'react-icons/fa';
+// import DOMPurify from 'dompurify';
+// import './App.css';
+
+// const SplashScreen = ({ onAnimationEnd }) => {
+//   const [showSlogan, setShowSlogan] = useState(false);
+//   useEffect(() => {
+//     const sloganTimer = setTimeout(() => {
+//       setShowSlogan(true);
+//     }, 200);
+//     return () => clearTimeout(sloganTimer);
+//   }, []);
+//   return (
+//     <div className={`splash-screen ${onAnimationEnd ? 'hidden' : ''}`}>
+//       <div className="splash-content">
+//         <h1 className="splash-title">HUBA AI</h1>
+//         {showSlogan && <p className="splash-slogan">THINK . TALK . SOLVE</p>}
+//       </div>
+//     </div>
+//   );
+// };
+
+// const AuthScreen = ({ setIsAuthenticated, setFirstName }) => {
+//   const [isSignup, setIsSignup] = useState(false);
+//   const [formData, setFormData] = useState({
+//     fullName: '',
+//     email: '',
+//     password: '',
+//   });
+//   const [error, setError] = useState('');
+//   const [signupSuccess, setSignupSuccess] = useState(false);
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     setError('');
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+//     const dataToSend = {
+//       fullName: formData.fullName,
+//       email: formData.email,
+//       password: formData.password,
+//     };
+//     const url = isSignup
+//       ? 'https://aichatbot-backend-hxs8.onrender.com/api/auth/signup'
+//       : 'https://aichatbot-backend-hxs8.onrender.com/api/auth/login';
+//     try {
+//       console.log('Sending data to', url, ':', dataToSend);
+//       const response = await axios.post(url, isSignup ? dataToSend : { email: formData.email, password: formData.password });
+//       if (isSignup && response.status === 200) {
+//         setSignupSuccess(true);
+//         setError('Signup successful! Please log in.');
+//         setFormData({ fullName: '', email: '', password: '' });
+//         return;
+//       }
+//       if (!isSignup && (response.status === 200 || response.status === 201)) {
+//         const token = response.data.token;
+//         console.log('Login response:', response.data);
+//         const loginFirstName = response.data.user.fullName.split(' ')[0] || 'User';
+//         localStorage.setItem('token', token);
+//         localStorage.setItem('firstName', loginFirstName);
+//         try {
+//           const userResponse = await axios.get('https://aichatbot-backend-hxs8.onrender.com/api/auth/user', {
+//             headers: { 'Authorization': `Bearer ${token}` },
+//           });
+//           console.log('User details fetched:', userResponse.data);
+//           const firstName = userResponse.data.firstName || loginFirstName;
+//           setFirstName(firstName);
+//           localStorage.setItem('firstName', firstName);
+//         } catch (userError) {
+//           console.error('Error fetching user details:', userError.response?.data || userError.message);
+//           setFirstName(loginFirstName);
+//         }
+//         setIsAuthenticated(true);
+//       }
+//     } catch (error) {
+//       const errorMessage = error.response?.data?.error || error.message || 'An unknown error occurred';
+//       console.error('Auth error:', error.response ? error.response.data : error.message);
+//       setError(errorMessage);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="auth-screen">
+//       <div className="auth-card">
+//         <h2 className="auth-title">{isSignup ? 'Sign Up' : 'Login'}</h2>
+//         {error && <p style={{ color: signupSuccess ? 'green' : 'red', textAlign: 'center' }}>{error}</p>}
+//         <form onSubmit={handleSubmit}>
+//           {isSignup && (
+//             <input
+//               type="text"
+//               name="fullName"
+//               placeholder="Full Name"
+//               value={formData.fullName}
+//               onChange={handleChange}
+//               required
+//               className="auth-input"
+//             />
+//           )}
+//           <input
+//             type="email"
+//             name="email"
+//             placeholder="Email"
+//             value={formData.email}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <input
+//             type="password"
+//             name="password"
+//             placeholder="Password"
+//             value={formData.password}
+//             onChange={handleChange}
+//             required
+//             className="auth-input"
+//           />
+//           <button type="submit" className="auth-button" disabled={isLoading}>
+//             {isLoading ? (
+//               <span className="loading-text">
+//                 {isSignup ? 'Creating Account' : 'Logging In'} <span className="dots">...</span>
+//               </span>
+//             ) : (
+//               isSignup ? 'Sign Up' : 'Login'
+//             )}
+//           </button>
+//         </form>
+//         <p onClick={() => { setIsSignup(!isSignup); setSignupSuccess(false); setError(''); }} className="auth-toggle">
+//           {isSignup ? 'Already have an account? Login' : 'Need an account? Sign Up'}
+//         </p>
+//       </div>
+//     </div>
+//   );
+// };
+
+// const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
+//   const [query, setQuery] = useState('');
+//   const [displayedMessages, setDisplayedMessages] = useState([]);
+//   const [isThinking, setIsThinking] = useState(false);
+//   const [isRecording, setIsRecording] = useState(false);
+//   const [showWelcome, setShowWelcome] = useState(true);
+//   const [showTitle, setShowTitle] = useState(true);
+//   const [showCameraOptions, setShowCameraOptions] = useState(false);
+//   const [selectedImage, setSelectedImage] = useState(null);
+//   const [cameraStream, setCameraStream] = useState(null);
+//   const chatContentRef = useRef(null);
+//   const fileInputRef = useRef(null);
+//   const videoRef = useRef(null);
+//   const [copiedStates, setCopiedStates] = useState({});
+
+//   useEffect(() => {
+//     setShowWelcome(true);
+//     setShowTitle(true);
+//   }, [firstName]);
+
+//   useEffect(() => {
+//     if (chatContentRef.current) {
+//       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
+//     }
+//   }, [displayedMessages, isThinking]);
+
+//   const getLocalTimeAndDate = () => {
+//     const now = new Date();
+//     const options = {
+//       weekday: 'long',
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit',
+//       second: '2-digit',
+//       timeZoneName: 'short',
+//     };
+//     return now.toLocaleString(undefined, options);
+//   };
+
+//   const handleTimeOrDateQuery = (question) => {
+//     const lowerCaseQuestion = question.toLowerCase().trim();
+//     const predefinedQuestions = {
+//       "what is today's date": () => {
+//         const now = new Date();
+//         const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+//         return `Today's date is ${date}.`;
+//       },
+//       "what is date today": () => {
+//         const now = new Date();
+//         const date = now.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+//         return `Today's date is ${date}.`;
+//       },
+//       "what is now time": () => {
+//         const now = new Date();
+//         const time = now.toLocaleTimeString();
+//         return `The current time is ${time}.`;
+//       },
+//       "what is current time": () => {
+//         const now = new Date();
+//         const time = now.toLocaleTimeString();
+//         return `The current time is ${time}.`;
+//       },
+//     };
+
+//     if (predefinedQuestions[lowerCaseQuestion]) {
+//       const response = predefinedQuestions[lowerCaseQuestion]();
+//       const timestamp = new Date().toISOString();
+//       const newMessage = { question, answer: response, error: false, canRetry: false, timestamp };
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//       setIsThinking(false);
+//       setQuery('');
+//       return true;
+//     }
+
+//     if (lowerCaseQuestion.includes('time') || lowerCaseQuestion.includes('date')) {
+//       return false;
+//     }
+
+//     return false;
+//   };
+
+//   const handleCameraClick = () => {
+//     setShowCameraOptions(!showCameraOptions);
+//   };
+
+//   const handleUploadImage = () => {
+//     fileInputRef.current.click();
+//     setShowCameraOptions(false);
+//   };
+
+//   const handleOpenCamera = async () => {
+//     try {
+//       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//       setCameraStream(stream);
+//       setShowCameraOptions(false);
+//       if (videoRef.current) {
+//         videoRef.current.srcObject = stream;
+//       }
+//     } catch (err) {
+//       console.error("Error accessing camera:", err);
+//       alert("Could not access the camera. Please check permissions or try uploading an image instead.");
+//     }
+//   };
+
+//   const handleCapturePhoto = () => {
+//     const canvas = document.createElement('canvas');
+//     canvas.width = videoRef.current.videoWidth;
+//     canvas.height = videoRef.current.videoHeight;
+//     const ctx = canvas.getContext('2d');
+//     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+//     canvas.toBlob((blob) => {
+//       const file = new File([blob], "captured-photo.jpg", { type: "image/jpeg" });
+//       setSelectedImage(file);
+//       stopCamera();
+//     }, "image/jpeg");
+//   };
+
+//   const stopCamera = () => {
+//     if (cameraStream) {
+//       cameraStream.getTracks().forEach(track => track.stop());
+//       setCameraStream(null);
+//     }
+//   };
+
+//   const handleImageSelect = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       setSelectedImage(file);
+//     }
+//   };
+
+//   const handleSubmit = async (e, retryMessage = null) => {
+//     e.preventDefault();
+//     const messageToSend = retryMessage || query;
+//     if (!messageToSend.trim() && !selectedImage) return;
+
+//     if (handleTimeOrDateQuery(messageToSend)) return;
+
+//     const timestamp = new Date().toISOString();
+//     const newMessage = { question: messageToSend, image: selectedImage ? URL.createObjectURL(selectedImage) : null, answer: null, error: false, canRetry: false, timestamp };
+//     if (!retryMessage) {
+//       setDisplayedMessages((prev) => [...prev, newMessage]);
+//     }
+//     setIsThinking(true);
+//     try {
+//       const token = localStorage.getItem('token');
+//       const formData = new FormData();
+//       formData.append('question', messageToSend);
+//       if (selectedImage) {
+//         formData.append('image', selectedImage);
+//       }
+
+//       const response = await axios.post(
+//         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
+//         formData,
+//         {
+//           headers: {
+//             'Authorization': `Bearer ${token}`,
+//             'Content-Type': 'multipart/form-data',
+//           },
+//         }
+//       );
+//       console.log('API Response:', response.data);
+//       setDisplayedMessages((prev) => {
+//         const updatedMessages = [...prev];
+//         const messageIndex = retryMessage
+//           ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//           : updatedMessages.length - 1;
+//         updatedMessages[messageIndex] = {
+//           ...updatedMessages[messageIndex],
+//           answer: response.data.response || 'No response data',
+//           error: false,
+//           canRetry: false,
+//         };
+//         return updatedMessages;
+//       });
+//     } catch (error) {
+//       console.error('Chat Error:', error.response ? error.response.data : error.message);
+//       if (error.response && error.response.status === 401) {
+//         localStorage.removeItem('token');
+//         setIsAuthenticated(false);
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Your session has expired. Please log in again.',
+//             error: true,
+//             canRetry: false,
+//           };
+//           return updatedMessages;
+//         });
+//       } else {
+//         setDisplayedMessages((prev) => {
+//           const updatedMessages = [...prev];
+//           const messageIndex = retryMessage
+//             ? updatedMessages.findIndex((msg) => msg.question === retryMessage)
+//             : updatedMessages.length - 1;
+//           updatedMessages[messageIndex] = {
+//             ...updatedMessages[messageIndex],
+//             answer: 'Sorry, something went wrong. Please try again.',
+//             error: true,
+//             canRetry: true,
+//           };
+//           return updatedMessages;
+//         });
+//       }
+//     }
+//     setIsThinking(false);
+//     if (!retryMessage) {
+//       setQuery('');
+//       setSelectedImage(null);
+//     }
+//   };
+
+//   const handleKeyPress = (e) => {
+//     if (e.key === 'Enter' && !e.shiftKey) {
+//       e.preventDefault();
+//       handleSubmit(e);
+//     }
+//   };
+
+//   const handleVoiceInput = () => {
+//     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+//     if (!SpeechRecognition) {
+//       alert('Speech Recognition API is not supported in this browser. Please use a modern browser like Chrome.');
+//       return;
+//     }
+//     const recognition = new SpeechRecognition();
+//     recognition.lang = 'en-US';
+//     recognition.interimResults = false;
+//     recognition.maxAlternatives = 1;
+//     recognition.onstart = () => {
+//       console.log('Voice recognition started. Speak now.');
+//       setIsRecording(true);
+//     };
+//     recognition.onresult = (event) => {
+//       const transcript = event.results[0][0].transcript;
+//       console.log('Voice Input:', transcript);
+//       setQuery(transcript);
+//     };
+//     recognition.onerror = (event) => {
+//       console.error('Voice Recognition Error:', event.error);
+//       if (event.error === 'no-speech') {
+//         alert('No speech detected. Please try again.');
+//       } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+//         alert('Microphone access denied. Please allow microphone permissions in your browser settings.');
+//       } else {
+//         alert('An error occurred during voice recognition: ' + event.error);
+//       }
+//     };
+//     recognition.onend = () => {
+//       console.log('Voice recognition ended.');
+//       setIsRecording(false);
+//     };
+//     recognition.start();
+//   };
+
+//   const handleLogout = () => {
+//     const token = localStorage.getItem('token');
+//     axios.post(
+//       'https://aichatbot-backend-hxs8.onrender.com/api/chat/logout',
+//       {},
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${token}`,
+//         },
+//       }
+//     ).then(() => {
+//       console.log('Logged out successfully');
+//     }).catch((err) => {
+//       console.error('Logout error:', err);
+//     });
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('firstName');
+//     setIsAuthenticated(false);
+//   };
+
+//   const handleRetry = (message) => (e) => {
+//     handleSubmit(e, message);
+//   };
+
+//   const handleCopy = (code, index) => {
+//     navigator.clipboard.writeText(code).then(() => {
+//       setCopiedStates((prev) => ({ ...prev, [index]: true }));
+//       setTimeout(() => {
+//         setCopiedStates((prev) => ({ ...prev, [index]: false }));
+//       }, 2000);
+//     }).catch((err) => {
+//       console.error('Failed to copy code:', err);
+//       alert('Failed to copy code. Please copy it manually.');
+//     });
+//   };
+
+//   const renderResponse = (response, message) => {
+//     const parts = [];
+//     let remainingContent = response;
+
+//     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
+//     const imageRegex = /\/uploads\/[^\s]+/g;
+
+//     let codeMatch;
+//     let lastIndex = 0;
+
+//     while ((codeMatch = codeBlockRegex.exec(response)) !== null) {
+//       const beforeCode = response.slice(lastIndex, codeMatch.index);
+//       const imageMatches = [...beforeCode.matchAll(imageRegex)];
+
+//       let subIndex = 0;
+//       for (const imageMatch of imageMatches) {
+//         const textBeforeImage = beforeCode.slice(subIndex, imageMatch.index);
+//         if (textBeforeImage) {
+//           parts.push({ type: "text", value: textBeforeImage });
+//         }
+//         parts.push({ type: "image", value: imageMatch[0] });
+//         subIndex = imageMatch.index + imageMatch[0].length;
+//       }
+//       const remainingText = beforeCode.slice(subIndex);
+//       if (remainingText) {
+//         parts.push({ type: "text", value: remainingText });
+//       }
+
+//       parts.push({
+//         type: "code",
+//         language: codeMatch[1] || "text",
+//         value: codeMatch[2],
+//       });
+//       lastIndex = codeMatch.index + codeMatch[0].length;
+//     }
+
+//     remainingContent = response.slice(lastIndex);
+//     const imageMatches = [...remainingContent.matchAll(imageRegex)];
+//     let subIndex = 0;
+//     for (const imageMatch of imageMatches) {
+//       const textBeforeImage = remainingContent.slice(subIndex, imageMatch.index);
+//       if (textBeforeImage) {
+//         parts.push({ type: "text", value: textBeforeImage });
+//       }
+//       parts.push({ type: "image", value: imageMatch[0] });
+//       subIndex = imageMatch.index + imageMatch[0].length;
+//     }
+//     const finalText = remainingContent.slice(subIndex);
+//     if (finalText) {
+//       parts.push({ type: "text", value: finalText });
+//     }
+
+//     if (message.image && !imageMatches.length) {
+//       parts.push({ type: "image", value: message.image });
+//     }
+
+//     const tempRegex = /°[CF]|\btemperature\b/i;
+//     const listRegex = /(\d+\.\s|[*-]\s)/;
+
+//     return (
+//       <div className="message-content">
+//         {parts.map((part, index) => {
+//           if (part.type === "text") {
+//             const sanitizedText = DOMPurify.sanitize(part.value, { USE_PROFILES: { html: true } });
+//             if (tempRegex.test(sanitizedText)) {
+//               const parts = sanitizedText.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
+//               const city = parts[1] || 'Unknown City';
+//               const tempMatch = sanitizedText.match(/[-?\d]+(\.\d+)?/);
+//               const tempUnit = sanitizedText.match(/[CF]/i)?.[0] || 'C';
+//               const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
+//               const skyDetails = parts[parts.length - 1] || 'N/A';
+//               return (
+//                 <div key={index} className="temperature-container">
+//                   <div className="temperature-header">Temperature of</div>
+//                   <div className="temperature-city">{city}</div>
+//                   <div className="temperature-value">{temperature}</div>
+//                   <div className="sky-details">{skyDetails}</div>
+//                 </div>
+//               );
+//             }
+//             if (listRegex.test(sanitizedText)) {
+//               const lines = sanitizedText.split('\n');
+//               return (
+//                 <div key={index} className="options-block">
+//                   {lines.map((line, lineIndex) => {
+//                     const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
+//                     if (match) {
+//                       const [, prefix, content] = match;
+//                       const contentParts = content.split(/<\/?strong>/);
+//                       let key = '';
+//                       let rest = content;
+//                       if (contentParts.length > 1) {
+//                         key = contentParts[1];
+//                         rest = content.replace(`<strong>${key}</strong>`, '');
+//                       }
+//                       return (
+//                         <div key={lineIndex} className="option-item">
+//                           <span className="option-key">{prefix}</span>
+//                           <span className="option-content">
+//                             <strong>{key}</strong>
+//                             <span dangerouslySetInnerHTML={{ __html: rest }} />
+//                           </span>
+//                         </div>
+//                       );
+//                     }
+//                     return <div key={lineIndex} dangerouslySetInnerHTML={{ __html: line }} />;
+//                   })}
+//                 </div>
+//               );
+//             }
+//             return <div key={index} dangerouslySetInnerHTML={{ __html: sanitizedText }} />;
+//           } else if (part.type === "code") {
+//             return (
+//               <div key={index} className="code-block">
+//                 <button
+//                   className="copy-button"
+//                   onClick={() => handleCopy(part.value, index)}
+//                   title={copiedStates[index] ? 'Copied!' : 'Copy code'}
+//                 >
+//                   {copiedStates[index] ? 'Copied!' : <FaCopy />}
+//                 </button>
+//                 <pre>{part.value}</pre>
+//               </div>
+//             );
+//           } else if (part.type === "image") {
+//             return (
+//               <div key={index} className="image-container">
+//                 <img
+//                   src={part.value.startsWith('blob:') ? part.value : `https://aichatbot-backend-hxs8.onrender.com${part.value}`}
+//                   alt="Chat image"
+//                   className="chat-image"
+//                 />
+//               </div>
+//             );
+//           }
+//           return null;
+//         })}
+//       </div>
+//     );
+//   };
+
+//   return (
+//     <div className="chat-screen">
+//       <div className="chat-container">
+//         <div className="chat-main">
+//           {showTitle && (
+//             <div className="chat-header">
+//               <div className="theme-toggle" onClick={toggleTheme}>
+//                 {theme === 'light' ? <FaMoon /> : <FaSun />}
+//               </div>
+//               <h2 className="chat-title">HUBA AI</h2>
+//               <div className="header-actions">
+//                 <button onClick={handleLogout} className="logout-button" title="Logout">
+//                   <FaSignOutAlt />
+//                 </button>
+//               </div>
+//             </div>
+//           )}
+//           {showWelcome && (
+//             <div className="welcome-message">
+//               Welcome {firstName || 'User'} to HUBA AI
+//             </div>
+//           )}
+//           <div className="chat-content" ref={chatContentRef}>
+//             {!showWelcome && displayedMessages.length === 0 && (
+//               <div className="welcome-message">Start by asking a question!</div>
+//             )}
+//             {displayedMessages.map((message, index) => (
+//               <div key={index} className="chat-item">
+//                 <div className="message user-message">
+//                   <p>{message.question}</p>
+//                 </div>
+//                 {message.answer && (
+//                   <div className="message ai-message">
+//                     <p>{renderResponse(message.answer, message)}</p>
+//                     {message.error && message.canRetry && (
+//                       <button
+//                         onClick={handleRetry(message.question)}
+//                         className="retry-button"
+//                         title="Retry"
+//                       >
+//                         <FaRedo />
+//                       </button>
+//                     )}
+//                   </div>
+//                 )}
+//               </div>
+//             ))}
+//             {isThinking && <div className="thinking">Thinking...</div>}
+//           </div>
+//           <div className="chat-input-bar">
+//             <div className="camera-wrapper">
+//               <FaCamera
+//                 className="camera-icon"
+//                 onClick={handleCameraClick}
+//               />
+//               {showCameraOptions && (
+//                 <div className="camera-options">
+//                   <button
+//                     onClick={handleUploadImage}
+//                     className="camera-option"
+//                   >
+//                     Upload Image
+//                   </button>
+//                   <button
+//                     onClick={handleOpenCamera}
+//                     className="camera-option"
+//                   >
+//                     Take Photo
+//                   </button>
+//                 </div>
+//               )}
+//               <input
+//                 type="file"
+//                 accept="image/*"
+//                 ref={fileInputRef}
+//                 onChange={handleImageSelect}
+//                 style={{ display: 'none' }}
+//                 capture="environment"
+//               />
+//             </div>
+//             {cameraStream && (
+//               <div className="camera-modal">
+//                 <video
+//                   ref={videoRef}
+//                   autoPlay
+//                   className="camera-video"
+//                 />
+//                 <button
+//                   onClick={handleCapturePhoto}
+//                   className="capture-button"
+//                 >
+//                   Capture Photo
+//                 </button>
+//                 <button
+//                   onClick={stopCamera}
+//                   className="close-camera-button"
+//                 >
+//                   Close Camera
+//                 </button>
+//               </div>
+//             )}
+//             {selectedImage && (
+//               <div className="image-preview">
+//                 <img
+//                   src={URL.createObjectURL(selectedImage)}
+//                   alt="Preview"
+//                   className="preview-image"
+//                 />
+//                 <button
+//                   onClick={() => setSelectedImage(null)}
+//                   className="remove-image-button"
+//                 >
+//                   Remove
+//                 </button>
+//               </div>
+//             )}
+//             <textarea
+//               placeholder="Ask anything..."
+//               value={query}
+//               onChange={(e) => setQuery(e.target.value)}
+//               onKeyPress={handleKeyPress}
+//               className="chat-input"
+//               rows="1"
+//             />
+//             <FaMicrophone
+//               className={`chat-icon ${isRecording ? 'recording' : ''}`}
+//               onClick={handleVoiceInput}
+//             />
+//             <button onClick={handleSubmit} disabled={isThinking} className="chat-send-button">
+//               <FaPaperPlane />
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// function ChatBot() {
+//   const [isSplash, setIsSplash] = useState(true);
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+//   const [theme, setTheme] = useState(() => {
+//     const savedTheme = localStorage.getItem('theme');
+//     return savedTheme || 'light';
+//   });
+//   const [firstName, setFirstName] = useState(localStorage.getItem('firstName') || '');
+
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setIsSplash(false);
+//     }, 3000);
+//   }, []);
+
+//   const toggleTheme = () => {
+//     const newTheme = theme === 'light' ? 'dark' : 'light';
+//     setTheme(newTheme);
+//     localStorage.setItem('theme', newTheme);
+//   };
+
+//   return (
+//     <div className={`app ${theme}`}>
+//       {isSplash ? (
+//         <SplashScreen onAnimationEnd={!isSplash} />
+//       ) : (
+//         <Router>
+//           <Routes>
+//             <Route
+//               path="/"
+//               element={
+//                 !isAuthenticated ? (
+//                   <AuthScreen setIsAuthenticated={setIsAuthenticated} setFirstName={setFirstName} />
+//                 ) : (
+//                   <Navigate to="/chat" />
+//                 )
+//               }
+//             />
+//             <Route
+//               path="/chat"
+//               element={
+//                 isAuthenticated ? (
+//                   <ChatScreen
+//                     setIsAuthenticated={setIsAuthenticated}
+//                     firstName={firstName}
+//                     theme={theme}
+//                     toggleTheme={toggleTheme}
+//                   />
+//                 ) : (
+//                   <Navigate to="/" />
+//                 )
+//               }
+//             />
+//             <Route path="*" element={<Navigate to={isAuthenticated ? "/chat" : "/"} />} />
+//           </Routes>
+//         </Router>
+//       )}
+//     </div>
+//   );
+// }
+
+// export default ChatBot;
+
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon } from 'react-icons/fa';
+import { FaMicrophone, FaPaperPlane, FaSignOutAlt, FaRedo, FaCopy, FaSun, FaMoon, FaCamera, FaTimes } from 'react-icons/fa';
 import DOMPurify from 'dompurify';
 import './App.css';
 
@@ -9456,11 +10832,16 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showTitle, setShowTitle] = useState(true);
+  const [showCameraOptions, setShowCameraOptions] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [cameraStream, setCameraStream] = useState(null);
+  const [enlargedImage, setEnlargedImage] = useState(null);
   const chatContentRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
   const [copiedStates, setCopiedStates] = useState({});
 
   useEffect(() => {
-    // Show welcome message briefly but allow immediate interaction
     setShowWelcome(true);
     setShowTitle(true);
   }, [firstName]);
@@ -9521,7 +10902,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
       return true;
     }
 
-    // If the question contains "time" or "date" but doesn't match predefined questions, let the backend handle it
     if (lowerCaseQuestion.includes('time') || lowerCaseQuestion.includes('date')) {
       return false;
     }
@@ -9529,30 +10909,84 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
     return false;
   };
 
+  const handleCameraClick = () => {
+    setShowCameraOptions(!showCameraOptions);
+  };
+
+  const handleUploadImage = () => {
+    fileInputRef.current.click();
+    setShowCameraOptions(false);
+  };
+
+  const handleOpenCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setCameraStream(stream);
+      setShowCameraOptions(false);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      alert("Could not access the camera. Please check permissions or try uploading an image instead.");
+    }
+  };
+
+  const handleCapturePhoto = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      const file = new File([blob], "captured-photo.jpg", { type: "image/jpeg" });
+      setSelectedImage(file);
+      stopCamera();
+    }, "image/jpeg");
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+  };
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+    }
+  };
+
   const handleSubmit = async (e, retryMessage = null) => {
     e.preventDefault();
     const messageToSend = retryMessage || query;
-    if (!messageToSend.trim()) return;
+    if (!messageToSend.trim() && !selectedImage) return;
 
-    // Handle predefined time or date queries locally
     if (handleTimeOrDateQuery(messageToSend)) return;
 
     const timestamp = new Date().toISOString();
-    const newMessage = { question: messageToSend, answer: null, error: false, canRetry: false, timestamp };
+    const newMessage = { question: messageToSend, image: selectedImage ? URL.createObjectURL(selectedImage) : null, answer: null, error: false, canRetry: false, timestamp };
     if (!retryMessage) {
       setDisplayedMessages((prev) => [...prev, newMessage]);
     }
     setIsThinking(true);
     try {
       const token = localStorage.getItem('token');
-      console.log('Sending message with token:', token);
+      const formData = new FormData();
+      formData.append('question', messageToSend);
+      if (selectedImage) {
+        formData.append('image', selectedImage);
+      }
+
       const response = await axios.post(
         'https://aichatbot-backend-hxs8.onrender.com/api/chat/content',
-        { question: messageToSend },
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
@@ -9573,7 +11007,6 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
     } catch (error) {
       console.error('Chat Error:', error.response ? error.response.data : error.message);
       if (error.response && error.response.status === 401) {
-        console.log('401 Unauthorized: Token is invalid or expired. Error details:', error.response.data);
         localStorage.removeItem('token');
         setIsAuthenticated(false);
         setDisplayedMessages((prev) => {
@@ -9608,6 +11041,7 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
     setIsThinking(false);
     if (!retryMessage) {
       setQuery('');
+      setSelectedImage(null);
     }
   };
 
@@ -9690,78 +11124,155 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
     });
   };
 
-  const renderResponse = (response) => {
-    if (!response) return null;
-    const sanitizedResponse = DOMPurify.sanitize(response, { USE_PROFILES: { html: true } });
-    if (sanitizedResponse.includes('```')) {
-      const parts = sanitizedResponse.split('```');
-      return parts.map((part, index) => {
-        if (index % 2 === 1) {
-          return (
-            <div key={index} className="code-block">
-              <button
-                className="copy-button"
-                onClick={() => handleCopy(part, index)}
-                title={copiedStates[index] ? 'Copied!' : 'Copy code'}
-              >
-                {copiedStates[index] ? 'Copied!' : <FaCopy />}
-              </button>
-              <pre>{part}</pre>
-            </div>
-          );
+  const handleImageClick = (imageSrc) => {
+    setEnlargedImage(imageSrc);
+  };
+
+  const handleCloseImage = () => {
+    setEnlargedImage(null);
+  };
+
+  const renderResponse = (response, message) => {
+    const parts = [];
+    let remainingContent = response;
+
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)\n```/g;
+    const imageRegex = /\/uploads\/[^\s]+/g;
+
+    let codeMatch;
+    let lastIndex = 0;
+
+    while ((codeMatch = codeBlockRegex.exec(response)) !== null) {
+      const beforeCode = response.slice(lastIndex, codeMatch.index);
+      const imageMatches = [...beforeCode.matchAll(imageRegex)];
+
+      let subIndex = 0;
+      for (const imageMatch of imageMatches) {
+        const textBeforeImage = beforeCode.slice(subIndex, imageMatch.index);
+        if (textBeforeImage) {
+          parts.push({ type: "text", value: textBeforeImage });
         }
-        return <span key={index} dangerouslySetInnerHTML={{ __html: part }} />;
+        parts.push({ type: "image", value: imageMatch[0] });
+        subIndex = imageMatch.index + imageMatch[0].length;
+      }
+      const remainingText = beforeCode.slice(subIndex);
+      if (remainingText) {
+        parts.push({ type: "text", value: remainingText });
+      }
+
+      parts.push({
+        type: "code",
+        language: codeMatch[1] || "text",
+        value: codeMatch[2],
       });
+      lastIndex = codeMatch.index + codeMatch[0].length;
     }
+
+    remainingContent = response.slice(lastIndex);
+    const imageMatches = [...remainingContent.matchAll(imageRegex)];
+    let subIndex = 0;
+    for (const imageMatch of imageMatches) {
+      const textBeforeImage = remainingContent.slice(subIndex, imageMatch.index);
+      if (textBeforeImage) {
+        parts.push({ type: "text", value: textBeforeImage });
+      }
+      parts.push({ type: "image", value: imageMatch[0] });
+      subIndex = imageMatch.index + imageMatch[0].length;
+    }
+    const finalText = remainingContent.slice(subIndex);
+    if (finalText) {
+      parts.push({ type: "text", value: finalText });
+    }
+
+    if (message.image && !imageMatches.length) {
+      parts.push({ type: "image", value: message.image });
+    }
+
     const tempRegex = /°[CF]|\btemperature\b/i;
-    if (tempRegex.test(sanitizedResponse)) {
-      const parts = sanitizedResponse.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
-      const city = parts[1] || 'Unknown City';
-      const tempMatch = sanitizedResponse.match(/[-?\d]+(\.\d+)?/);
-      const tempUnit = sanitizedResponse.match(/[CF]/i)?.[0] || 'C';
-      const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
-      const skyDetails = parts[parts.length - 1] || 'N/A';
-      return (
-        <div className="temperature-container">
-          <div className="temperature-header">Temperature of</div>
-          <div className="temperature-city">{city}</div>
-          <div className="temperature-value">{temperature}</div>
-          <div className="sky-details">{skyDetails}</div>
-        </div>
-      );
-    }
     const listRegex = /(\d+\.\s|[*-]\s)/;
-    if (listRegex.test(sanitizedResponse)) {
-      const lines = sanitizedResponse.split('\n');
-      return (
-        <div className="options-block">
-          {lines.map((line, index) => {
-            const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
-            if (match) {
-              const [, prefix, content] = match;
-              const contentParts = content.split(/<\/?strong>/);
-              let key = '';
-              let rest = content;
-              if (contentParts.length > 1) {
-                key = contentParts[1];
-                rest = content.replace(`<strong>${key}</strong>`, '');
-              }
+
+    return (
+      <div className="message-content">
+        {parts.map((part, index) => {
+          if (part.type === "text") {
+            const sanitizedText = DOMPurify.sanitize(part.value, { USE_PROFILES: { html: true } });
+            if (tempRegex.test(sanitizedText)) {
+              const parts = sanitizedText.split(/in|is|,|\b°C\b|\b°F\b/i).map(part => part.trim());
+              const city = parts[1] || 'Unknown City';
+              const tempMatch = sanitizedText.match(/[-?\d]+(\.\d+)?/);
+              const tempUnit = sanitizedText.match(/[CF]/i)?.[0] || 'C';
+              const temperature = tempMatch ? `${tempMatch[0]}°${tempUnit}` : 'N/A';
+              const skyDetails = parts[parts.length - 1] || 'N/A';
               return (
-                <div key={index} className="option-item">
-                  <span className="option-key">{prefix}</span>
-                  <span className="option-content">
-                    <strong>{key}</strong>
-                    <span dangerouslySetInnerHTML={{ __html: rest }} />
-                  </span>
+                <div key={index} className="temperature-container">
+                  <div className="temperature-header">Temperature of</div>
+                  <div className="temperature-city">{city}</div>
+                  <div className="temperature-value">{temperature}</div>
+                  <div className="sky-details">{skyDetails}</div>
                 </div>
               );
             }
-            return <div key={index} dangerouslySetInnerHTML={{ __html: line }} />;
-          })}
-        </div>
-      );
-    }
-    return <div dangerouslySetInnerHTML={{ __html: sanitizedResponse }} />;
+            if (listRegex.test(sanitizedText)) {
+              const lines = sanitizedText.split('\n');
+              return (
+                <div key={index} className="options-block">
+                  {lines.map((line, lineIndex) => {
+                    const match = line.match(/^(\d+\.\s|[*-]\s)(.+)/);
+                    if (match) {
+                      const [, prefix, content] = match;
+                      const contentParts = content.split(/<\/?strong>/);
+                      let key = '';
+                      let rest = content;
+                      if (contentParts.length > 1) {
+                        key = contentParts[1];
+                        rest = content.replace(`<strong>${key}</strong>`, '');
+                      }
+                      return (
+                        <div key={lineIndex} className="option-item">
+                          <span className="option-key">{prefix}</span>
+                          <span className="option-content">
+                            <strong>{key}</strong>
+                            <span dangerouslySetInnerHTML={{ __html: rest }} />
+                          </span>
+                        </div>
+                      );
+                    }
+                    return <div key={lineIndex} dangerouslySetInnerHTML={{ __html: line }} />;
+                  })}
+                </div>
+              );
+            }
+            return <div key={index} dangerouslySetInnerHTML={{ __html: sanitizedText }} />;
+          } else if (part.type === "code") {
+            return (
+              <div key={index} className="code-block">
+                <button
+                  className="copy-button"
+                  onClick={() => handleCopy(part.value, index)}
+                  title={copiedStates[index] ? 'Copied!' : 'Copy code'}
+                >
+                  {copiedStates[index] ? 'Copied!' : <FaCopy />}
+                </button>
+                <pre>{part.value}</pre>
+              </div>
+            );
+          } else if (part.type === "image") {
+            const imageSrc = part.value.startsWith('blob:') ? part.value : `https://aichatbot-backend-hxs8.onrender.com${part.value}`;
+            return (
+              <div key={index} className="image-container">
+                <img
+                  src={imageSrc}
+                  alt="Chat image"
+                  className="chat-image"
+                  onClick={() => handleImageClick(imageSrc)}
+                />
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
   };
 
   return (
@@ -9797,7 +11308,7 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
                 </div>
                 {message.answer && (
                   <div className="message ai-message">
-                    <p>{renderResponse(message.answer)}</p>
+                    <p>{renderResponse(message.answer, message)}</p>
                     {message.error && message.canRetry && (
                       <button
                         onClick={handleRetry(message.question)}
@@ -9813,7 +11324,83 @@ const ChatScreen = ({ setIsAuthenticated, firstName, theme, toggleTheme }) => {
             ))}
             {isThinking && <div className="thinking">Thinking...</div>}
           </div>
+          {enlargedImage && (
+            <div className="image-modal" onClick={handleCloseImage}>
+              <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+                <img src={enlargedImage} alt="Enlarged chat image" className="enlarged-image" />
+                <button className="close-image-button" onClick={handleCloseImage}>
+                  <FaTimes />
+                </button>
+              </div>
+            </div>
+          )}
           <div className="chat-input-bar">
+            <div className="camera-wrapper">
+              <FaCamera
+                className="camera-icon"
+                onClick={handleCameraClick}
+              />
+              {showCameraOptions && (
+                <div className="camera-options">
+                  <button
+                    onClick={handleUploadImage}
+                    className="camera-option"
+                  >
+                    Upload Image
+                  </button>
+                  <button
+                    onClick={handleOpenCamera}
+                    className="camera-option"
+                  >
+                    Take Photo
+                  </button>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageSelect}
+                style={{ display: 'none' }}
+                capture="environment"
+              />
+            </div>
+            {cameraStream && (
+              <div className="camera-modal">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  className="camera-video"
+                />
+                <button
+                  onClick={handleCapturePhoto}
+                  className="capture-button"
+                >
+                  Capture Photo
+                </button>
+                <button
+                  onClick={stopCamera}
+                  className="close-camera-button"
+                >
+                  Close Camera
+                </button>
+              </div>
+            )}
+            {selectedImage && (
+              <div className="image-preview">
+                <img
+                  src={URL.createObjectURL(selectedImage)}
+                  alt="Preview"
+                  className="preview-image"
+                />
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="remove-image-button"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
             <textarea
               placeholder="Ask anything..."
               value={query}
